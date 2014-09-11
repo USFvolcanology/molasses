@@ -1,0 +1,32 @@
+Module: Distribute
+
+Synopsis
+DISTRIBUTE Shares lava from overflowing cells to their neighbors
+
+Input Arguments Table
+  Parameter                    dtype               comments  
+  Global Data Grid             Location (2D Array)     
+  Active Flow List             Cell (1D List)      
+  Active Flow Cell Count       unsigned integer      
+  Active Flow List Size        unsigned integer    "Worker Capacity"  
+  Number of Active Flow Lists  unsigned integer    "Worker Count"  
+  Modal Thickness  double     
+
+Outputs
+  Parameter               dtype               comments  
+  Active Flow List        Cell (1D List)      Empty or New Active Flow List
+                                              created if Worker Capacity is 
+                                              reached in Current Active Flow 
+                                              List; Function Return  
+  Active Flow List        Cell (1D List)      Updated current Active Flow List
+  Active Flow Cell Count  unsigned integer    Updated Inundated Cell Count   
+
+Version 00 Outline
+ *For all Cells in the Active Flow List whose thickness is greater than the Modal Thickness
+  *Identify Neighbors with the Identify Neighbors Module
+  *If there are neighbors identified as eligible to receive lava
+   *Calculate the cumulative elevation difference between neighbors and current cell
+   *Activate neighboring cells if inactive with the Activate Module
+   *Apportion lava proportional to elevation difference to each valid neighbor, so that no lava above the Modal Thickness is left in the current cell:
+    *Add lava thickness to neighboring cells thickness and elevation in the Active Flow List
+ *Return Empty or New Active Flow List

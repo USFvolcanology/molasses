@@ -1,0 +1,29 @@
+Module: Output
+
+Synopsis
+ OUTPUT writes model data to files
+
+Input Arguments Table
+    Parameter                    dtype                comments
+    Global Data Grid             Location (2D Array)      
+    Active Flow Lists            Cell (2D Array)      
+    Number of Active Flow Lists  unsigned integer     "Worker Count"
+    Active Flow Cell Counts      unsigned integer (1D List)      
+    Output Filename              char string          Flow File 
+    Geotransform Metadata        double (1D List)     Modified GDAL Array 
+    Modal Thickness              double     
+
+Outputs
+    Parameter                    dtype                comments
+    return code                  integer              Function Return 
+                                                       (0=success)
+    Data Output                  varies               Output to File 
+
+Version 00 Outline
+  *Open Output File at Output Filename location
+  *For each active cell in each worker:
+    *Calculate Easting and Northing from cell information and geotransform data
+    *Calculate Flow Thickness from cell information and Modal Thickness
+    *Print Easting, Northing, and Thickness to tab-delimited Output File
+  *Close File
+  *Return Return Code

@@ -1,0 +1,27 @@
+Module: Identify Neighbors
+
+Synopsis
+ NEIGHBOR_ID Identifies neighbors of a cell that are eligible to receive lava.
+
+Input Arguments Table
+  Parameter              dtype                comments    
+  Current Cell Data      Cell
+  Global Data Grid       Location (2D Array)          
+  Active Flow List       Cell (1D List)
+  Neighbor Count         integer
+
+Outputs
+  Parameter              dtype                comments    
+  Neighbor List          Cell (1D List)       Function Return
+  Neighbor Count         integer              updated in module
+
+Version 00 Outline
+  *4-Directional
+  *Allocates memory for Neighbor Cell List
+  *Checks if cell is on Global Data Grid border (if so, return with error)
+  *Checks in each CARDINAL direction of Current Cell whether:
+    *Neighbor Cell is NOT Current Cell's parent
+    *Neighbor Cell is below Current Cell
+  *If both are true, add Neighbor Cell's Data to Neighbor List
+  *Return Neighbor List
+  *To return errors, neighbor count is set to -1 before Neighbor List is returned.

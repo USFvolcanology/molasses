@@ -1,0 +1,30 @@
+Module: Activate
+
+Synopsis
+ ACTIVATE Adds an inactive grid cell to an active flow list.
+
+Input Arguments Table
+  Parameter              dtype                comments    
+  Global Data Grid       Location (2D Array)          
+  Active Flow List       Cell (1D List)          
+  Cell Row               unsigned integer          
+  Cell Column            unsigned integer          
+  Active Flow Cell Count unsigned integer          
+  Cell Parent Code       char                 boolean bitwise code (1-15)
+  Vent Yes/No            char                 boolean (0 or 1)    
+  Modal Thickness        double          
+
+Outputs
+  Parameter                dtype                comments    
+  Active Flow List       Cell (1D List)       updates if cell address is 
+                                              inactive     
+  Active Flow Cell Count unsigned integer     value returned by module     
+
+Version 00 Outline
+  *Reads in a location address (Cell Row, Cell Column)
+  *Checks the address for already on active flow list flag 
+     (flag stored in Global Data Grid)
+  *If address is not on active list:
+    *Increment Active Flow Cell Count
+    *Append Active Flow List with Global Data Grid information at given address
+ *Return Active Flow Cell Count

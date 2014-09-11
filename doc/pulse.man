@@ -1,0 +1,36 @@
+Module: Pulse
+
+Synopsis
+PULSE Delivers magma to each vent cell.
+
+Input Arguments Table
+  Parameter              dtype           comments  
+  Active Flow List       Cell (1D List)  Should be first Active Flow List
+  Vent List              VentArr (pointer to a 1D List)      
+  Active Flow Cell Count unsigned integer      
+  Total Remaining Volume double      
+  Number of Vent Cells   unsigned integer      
+  Geotransform Metadata  double (1D List)      
+
+Outputs
+  Parameter              dtype           comments  
+  Active Flow List       Cell (1D List)  updated with new lava thickness values
+                                           at vents  
+  Vent List              VentArr (Pointer to a 1D List)  
+                                         totalvolume of each entry reduced by
+                                           pulsed magma volume  
+  Total Remaining Volume double          reduced by pulsed magma volume  
+  Return Code            integer         Function Return  
+
+Version 00 Outline
+ *Find all vents in first active list 
+ *For each vent:
+  *Check that pulse for current vent is not greater than vents remaining volume (Adjust pulse to remaining volume if so)
+  *Add (pulse volume/grid cell size) to Active Flow Cells thickness
+  *Add same thickness to Active Flow Cells elevation
+  *Reduce vents remaining volume by pulse volume
+ *If all vents have been accounted for:
+  *Calculate Total Remaining Volume from sum of remaining vent volumes
+  *Return Code (1=successful)
+ *Errors are returned with Return Code = -1
+ *If Total Remaining Volume = 0, Return Code = 0

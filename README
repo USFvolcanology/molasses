@@ -1,0 +1,7 @@
+NAME
+ Molasses
+ 
+DESCRIPTION
+  Molasses is an in-progress fluid flow simulator, written in C. It is not yet complete and is in need of testing and additional programming before it can be used effectively.
+
+Compile using make in the directory src.

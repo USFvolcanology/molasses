@@ -1,0 +1,35 @@
+Module: ArrayInit
+
+Synopsis
+ Functions to allocate memory for Active Flow Lists and Global Data Grid
+
+ACTIVELIST_INIT: Input Arguments Table
+    Parameter          dtype                comments    
+    Number of Lists    unsigned integer     "Worker Count"    
+    Size of Lists      unsigned integer     "Worker Capacity"    
+
+ACTIVELIST_INIT: Outputs
+    Parameter          dtype   comments    
+    Active Flow List   Cell (2D Array)      Function return     
+
+
+GLOBALDATA_INIT: Input Arguments Table
+    Parameter          dtype                comments    
+    Number of Rows     unsigned integer          
+    Number of Columns  unsigned integer          
+
+GLOBALDATA_INIT: Outputs
+    Parameter          dtype                comments    
+    Global Data Grid   Location (2D Array)  Function Return     
+
+Version 00 Outline
+  ACTIVELIST_INIT
+    *Reads in Number and Size of Lists
+    *Allocates memory for list of Cell Pointers, N+1 Lists long
+    *Allocates memory for list of Cells, Size+1 long, for each Cell Pointer
+
+  GLOBALDATA_INIT
+    *Reads in Row and Column Quantities
+    *Allocates memory for list of Location Pointers, N+1 Rows long
+    *Allocates memory for list of Locations, Columns+1 long, for each Location
+        Pointer

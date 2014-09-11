@@ -1,0 +1,23 @@
+Module: DEM Loader
+
+Synopsis
+ DEM_LOADER reads a GDAL-compatible DEM raster into a 2D Global Data Grid
+
+Input Arguments Table
+    Parameter              dtype              comments    
+    DEM Filename           char string        DEM Raster File     
+    Global Data Grid       Location (Pointer to a 2D Array)          
+
+Outputs
+    Parameter              dtype              comments    
+    Geotransform Metadata  double (1D List)   Modified GDAL Array &
+                                                Function Return     
+    Global Data Grid       Location (Pointer to a 2D Array)          
+
+Version 00 Outline
+  *Use GDAL API to open Raster File and read Geotransform Metadata
+  *Modify Metadata for use in model (record row/column count and resolution)
+  *Allocate memory for Global Data Grid using Metadata and 
+      Function GLOBALDATA_INIT
+  *Read Raster File contents and write contents to Global Data Grid Cells elev elements
+  *Return Geotransform Metadata List

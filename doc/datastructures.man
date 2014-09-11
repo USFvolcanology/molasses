@@ -1,0 +1,41 @@
+Model Data Structures
+
+Cell
+  Main Use: Inundated Cells in Active Flow Lists
+
+    Element     dtype            Description    
+    row         unsigned integer y-address in Global Data Grid     
+    col         unsigned integer x-address in Global Data Grid     
+    elev        double           Elevation of grid cell     
+    thickness   double           Thickness of lava in grid cell     
+    parents     char             Bitwise parent code 
+                                   (0th bit  right; 1stdown; 2ndleft; 3rdup)
+
+Location
+  Main Use: Location information in Global Data Grid
+    Element     dtype            Description    
+    elev        double           elevation at location    
+    owner       unsigned integer Number of Active Flow List which can modify 
+                                   the cell at this location    
+    active      unsigned integer The order in which this location became active
+                                   (0not inundated; also the index of this
+                                   location in its Active Flow List)   
+
+VentArr
+  Main Use: Vent information in array of Active Vents
+    Element     dtype            Description    
+    northing    double           y-location of vent in real life    
+    easting     double           x-location of vent in real life    
+    totalvolume double           Quantity of magma to be delivered to vent
+                                   during flow simulation    
+    pulsevolume double           Quantity of magma to be delivered to vent
+                                   at each simulation loop (Pulse)    
+
+GeoTransform Metadata Array
+  Not a data structure, but a common list, created in the DEM Loader Module:
+    [0] lower left x
+    [1] w-e pixel resolution, column size
+    [2] number of columns
+    [3] lower left y
+    [4] number of lines/rows
+    [5] n-s pixel resolution, row size
