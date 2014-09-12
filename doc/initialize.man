@@ -1,0 +1,39 @@
+Module: Initialize
+
+Synopsis
+  INITIALIZE reads parameter values from a configuration file
+
+Input Arguments Table
+  Parameter                dtype                   comments  
+  Configuration File Name  char string             Input File   
+  DEM Filename             pointer to char string  Raster File   
+  Output Filename          pointer to char string  Flow File   
+  Modal Thickness          double     
+  Vent Array               VentArr (pointer to 1D array)      
+  Vent Count               unsigned integer      
+
+Outputs
+  Parameter                dtype  comments  
+  DEM Filename             pointer to char string  Raster File   
+  Output Filename          pointer to char string  Flow File   
+  Modal Thickness          double     
+  Vent Array               VentArr (pointer to 1D array)      
+  Vent Count               unsigned integer      
+  return code              integer                 Function Return (0=success)
+
+Version 00 Outline
+ *Open Configuration File
+ *Split each line with a ` = ` string into Variable and Value
+ *Search for match between Variable string and different parameters
+ *If match is found, load Value into Model Parameter
+ *If line is `NEW_VENT` for the first time:
+  *Allocate memory for Vent Array
+  *Increment Vent Count
+ *If line is `NEW_VENT` for subsequent vents:
+  *Check that all Vent Parameters are assigned for last vent entry (If not,
+    return error code)
+  *Reallocate memory for additional vent
+  *Increment Vent Count
+ *Once all lines have been read, check that at least one vent and its
+   parameters were assigned
+ *Return Return Code (0=success, -1=failure)

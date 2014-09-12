@@ -1,0 +1,29 @@
+Module: Driver
+
+Synopsis
+ The Driver (MAIN) calls modules
+
+Input Arguments Table
+  Parameter                dtype             comments  
+  Configuration File Name  char string       Command Line Argument   
+
+Outputs
+  Parameter                dtype             comments  
+  Return code              integer           Function Return (0=success)
+  Time Elapsed             unsigned integer  Printed to Standard Output   
+
+Version 00 Outline
+ *Assign Modules to existing function pointers
+ *Record Start Time of Code
+ *Call Initialize Module to read in a configuration file and assign user-defined parameters
+ *Call DEM Loader Module to load the DEM raster into the Global Data Grid
+ *Assign Geotransform Metadata to global variables
+ *Call Initialize Flow Module to declare initial Active Flow Lists for the flow and add vents as first Active Flow Cells
+ *While Total Remaining Volume > 0:
+  *Call Pulse Module to deliver a pulse of magma to all vents with remaining magma in their total magma budgets
+  *Call Distribute Module to spread lava from inundated grid cells to their neighbors
+ *Report Total Number of Cells Inundated when no more magma is left to erupt
+ *Call Output Module to write a tab-delimited list of inundated cell locations to an output file
+ *Record End Time of Code
+ *Report Total Elapsed Time of Code
+ *Return Return Code (0=success)

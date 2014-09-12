@@ -1,0 +1,42 @@
+Module: Initialize Flow
+
+Synopsis
+  INIT_FLOW Loads model inputs into flow parameters
+
+Input Arguments Table
+  Parameter                   dtype   comments  
+  Global Data Grid            Location (2D Array)      
+  Active Flow Lists           Cell (Pointer to 2D Array)      
+  Vent List                   VentArr (1D List)      
+  Number of Active Flow Lists unsigned integer      
+  Size of Active Flow Lists   unsigned integer      
+  Number of Vents             unsigned integer      
+  Active Flow Cell Counts     unsigned integer (1D List)      
+  Geotransform Metadata       double (1D List)      
+  Total Remaining Volume      double      
+  Modal Thickness             double      
+
+Outputs
+  Parameter                   dtype                      comments
+  Active Flow Lists           Cell (Pointer to 2D Array) Created in this module
+  Size of Active Flow Lists   unsigned integer           Able to be determined
+                                                          in this module   
+  Number of Active Flow Lists unsigned integer           Incremented in this 
+                                                          module   
+  Active Flow Cell Counts     unsigned integer (1D List) Incremented in this 
+                                                          module
+  Total Remaining Volume      double      
+  Return Code                 integer  Function Return  
+
+Version 00 Outline
+ *Calculate Size of Active Flow Lists by doubling the number of cells estimated
+   to be filled (2 * total volume / grid cell area / modal thickness)
+ *Set Number of Active Flow Lists = 2
+ *Allocate memory for 2 Active Flow Lists with ACTIVELIST_INIT Function
+ *Allocate memory for Active Flow Lists Cell Counts List
+ *For each vent:
+  *Check that vent is inside Global Data Grid (if not exit with -1 Error 
+    Return Code)
+  *Activate Cell in Active List at Vent Location with Activate Module
+  *Add vent volume to Total Remaining Volume Counter
+ *Return Return Code (0=success)
