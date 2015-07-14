@@ -2,6 +2,12 @@
 
 unsigned ACTIVATE(Location **grid, Cell *list, unsigned row, unsigned col, 
                   unsigned aCt, char parent, char vent) {
+/*ACTIVATE_01 is a PARENT-LESS Activation Sceme! No parents are recorded.
+              
+              It is advised that this is used with a DRIVER module that ends
+              when the flow is no longer deforming, as opposed to a DRIVER
+              module that ends when the volume at the vent has run out.*/
+
 /*Module: ACTIVATE
 	accepts a location marker (row,column)
 	checks active value in a grid of typedef Location (global grid)
@@ -32,7 +38,7 @@ unsigned ACTIVATE(Location **grid, Cell *list, unsigned row, unsigned col,
 		list[aCt].lava_in = 0.0;
 		list[aCt].lava_out = 0.0;
 		list[aCt].thickness = (double) -1*grid[row][col].residual;
-		list[aCt].parents = (char) parent;
+		list[aCt].parents = (char) 0;
 		
 		return(aCt); /*Return active count if just activated*/
 	}

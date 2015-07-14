@@ -2,8 +2,16 @@
 
 int DISTRIBUTE(Location **dataGrid, Cell *actList, unsigned *actCt,
                double *gridmetadata){
-/*Module: DISTRIBUTE
+/*Module: DISTRIBUTE_03
 	args: Global Grid, Active List, Active Count, DEM Metadata
+	
+	DISTRIBUTE_03 is a TOPOGRAPHY-SHARE Distribution scheme! All lower neighbors
+	              are given an amount of lava proportional to their distance from
+	              the active cell, AND based on their relative elevations heights.
+	              
+	              This is also a NEW PARENTS Distribution scheme! All Parent-child
+	              relationships are reset when this module is called. All cells
+	              that give lava to other cells become the parent of those cells.
 */
 
 	unsigned counter = 1;
@@ -17,9 +25,15 @@ int DISTRIBUTE(Location **dataGrid, Cell *actList, unsigned *actCt,
 	int n; unsigned ncol,nrow;
 	double total_elev_diff;
 	double distribute_volume;
-	char parentcode;
 	
 	/*printf("Entered [DISTRIBUTE]\n");*/
+	
+	/*RESET PARENTS*/
+	for(counter=1;counter<=*actCt;counter++) 
+		actList[counter].parents = 0;
+	
+	
+	counter = 1;
 	
 	do { /*for all entries in active list (counter<=actCt)*/
 		
@@ -67,31 +81,8 @@ int DISTRIBUTE(Location **dataGrid, Cell *actList, unsigned *actCt,
 					
 					if(!dataGrid[nrow][ncol].active){
 					/*if neighbor not in active list, Activate neighbor cell*/
-						
-						/*give parent bit-code here*/
-						/*swap bits: (0th bit = parent is right;1st= p. is down;
-						              2nd bit = parent is left; 3rd=p. is up;
-						              4th bit = parent is right-down; 5rd=p. is left-down;
-						              6th bit = parent is left-up;    7rd=p. is right-up;)
-						 if neighbor to activate is DOWN, its parent (current cell) is UP.*/
-						
-						parentcode = 0; /*reset parent code*/
-						if     ((ncol<actList[counter].col)&&(nrow>actList[counter].row))
-							parentcode |= 1 << 4;
-						else if((ncol>actList[counter].col)&&(nrow>actList[counter].row))
-							parentcode |= 1 << 5;
-						else if((ncol>actList[counter].col)&&(nrow<actList[counter].row))
-							parentcode |= 1 << 6;
-						else if((ncol<actList[counter].col)&&(nrow<actList[counter].row))
-							parentcode |= 1 << 7;
-						else if(ncol<actList[counter].col) parentcode |= 1 << 0;
-						else if(nrow>actList[counter].row) parentcode |= 1 << 1;
-						else if(ncol>actList[counter].col) parentcode |= 1 << 2;
-						else if(nrow<actList[counter].row) parentcode |= 1 << 3;
-						
 						/*ACTIVATE*/
-						*actCt = ACTIVATE(dataGrid, actList, nrow, ncol,
-						                           *actCt, parentcode, 0);
+						*actCt = ACTIVATE(dataGrid, actList, nrow, ncol,*actCt, 0, 0);
 						/*args: global grid, active list, row, column, count,
 						  parent, vent (0=no)*/
 					}
@@ -102,7 +93,32 @@ int DISTRIBUTE(Location **dataGrid, Cell *actList, unsigned *actCt,
 					       distribute_volume * neigh_diff / total_elev_diff;
 					actList[dataGrid[nrow][ncol].active].elev      +=
 					       distribute_volume * neigh_diff / total_elev_diff;
-					       				
+					
+					/*ADD THIS CELL AS A PARENT OF THE NEIGHBOR*/
+					/*give parent bit-code here*/
+						/*swap bits: (0th bit = parent is right;1st= p. is down;
+						              2nd bit = parent is left; 3rd=p. is up;
+						              4th bit = parent is right-down; 5rd=p. is left-down;
+						              6th bit = parent is left-up;    7rd=p. is right-up;)
+						 if neighbor to activate is DOWN, its parent (current cell) is UP.*/
+					
+					if     ((ncol<actList[counter].col)&&(nrow>actList[counter].row))
+						actList[dataGrid[nrow][ncol].active].parents |= 1 << 4;
+					else if((ncol>actList[counter].col)&&(nrow>actList[counter].row))
+						actList[dataGrid[nrow][ncol].active].parents |= 1 << 5;
+					else if((ncol>actList[counter].col)&&(nrow<actList[counter].row))
+						actList[dataGrid[nrow][ncol].active].parents |= 1 << 6;
+					else if((ncol<actList[counter].col)&&(nrow<actList[counter].row))
+						actList[dataGrid[nrow][ncol].active].parents |= 1 << 7;
+					else if(ncol<actList[counter].col)
+						actList[dataGrid[nrow][ncol].active].parents |= 1 << 0;
+					else if(nrow>actList[counter].row) 
+						actList[dataGrid[nrow][ncol].active].parents |= 1 << 1;
+					else if(ncol>actList[counter].col) 
+						actList[dataGrid[nrow][ncol].active].parents |= 1 << 2;
+					else if(nrow<actList[counter].row) 
+						actList[dataGrid[nrow][ncol].active].parents |= 1 << 3;
+					
 				} /*End for each neighbor*/
 				
 				actList[counter].elev -= distribute_volume;

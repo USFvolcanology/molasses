@@ -2,8 +2,9 @@
 
 int main(int argc, char *argv[]) {
 /*
-DRIVER_00 is a VENT FLUX LIMITED flow scheme! The flow will end when all vents
-          have no more lava to effuse.
+DRIVER_01 is a FLOW-MOTION LIMITED flow scheme! The flow will end when all vents
+          have no more lava to effuse AND when the flow is no longer innundating
+          new grid cells.
 */
 /*DRIVER for a lava flow code
   Set up sample data grid (DEM, AOI)
@@ -34,6 +35,15 @@ DRIVER_00 is a VENT FLUX LIMITED flow scheme! The flow will end when all vents
 	Cell **WorkingCells;
 	unsigned *ActiveCounts; /*list of active counts for each worker*/
 	
+	/*End Times Calculators*/
+	double TotalMotion = 0; /*Bookkeeper to quantify flow change*/
+	double MinTotalMotion = 1e-11; /*Threshold to detect if flow is changing or not*/
+	time_t LastInundationTime;
+	double maxLastInundationTime = 10.0;
+	unsigned lastActiveCounter = 0;
+	unsigned lastmotionCounter = 0; /*Bookkeeper to count loops since last motion*/
+	unsigned maxLastMotionCount = 10; /*Threshold to stop flow*/
+	
 	/*Model Parameters*/
 	int      i,j;
 	/*workerC* variables are not currently defined here. workerCount is a built-in
@@ -48,9 +58,9 @@ DRIVER_00 is a VENT FLUX LIMITED flow scheme! The flow will end when all vents
 	double    residual;
 	double    elev_uncert;
 	double    volume_remaining;
+	int       volume_remaining_counter = 0; /*0 if volume remaining, 1 if no volume left*/
 	double    tot_vol_in;
 	double    tot_vol_out = 0; /*bookkeeper to check for total volume in cells*/
-	
 	
 	starttime = time(NULL);
 	srand(time(NULL)); /*Seed random number generator*/
@@ -99,7 +109,7 @@ DRIVER_00 is a VENT FLUX LIMITED flow scheme! The flow will end when all vents
 	
 	/*Assign Residual Thickness to Data Grid Locations*/
 	if(residual==-1) {
-		DEMmetadata = DEM_LOADER(Filenames[1],&dataGrid,"RESID");
+		DEMmetadata = DEM_LOADER(Filenames[2],&dataGrid,"RESID");
 		if(DEMmetadata==NULL){
 			printf("\nError [MAIN] from DEM_LOADER[RESID]. Exiting.\n");
 			return(-1);
@@ -116,7 +126,7 @@ DRIVER_00 is a VENT FLUX LIMITED flow scheme! The flow will end when all vents
 	
 	/*Assign Elevation Uncertainty to Data Grid Locations*/
 	if(elev_uncert==-1) {
-		DEMmetadata = DEM_LOADER(Filenames[2],&dataGrid,"T_UNC");
+		DEMmetadata = DEM_LOADER(Filenames[3],&dataGrid,"T_UNC");
 		if(DEMmetadata==NULL){
 			printf("\nError [MAIN] from DEM_LOADER[T_UNC]. Exiting.\n");
 			return(-1);
@@ -154,32 +164,37 @@ DRIVER_00 is a VENT FLUX LIMITED flow scheme! The flow will end when all vents
 	
 	
 	/*****LOOP to Pulse and Distribute Lava*************************************/
-	while(volume_remaining > 0) {	
-	
-		/*PULSE MODULE*/
-		ret = PULSE(WorkingCells[1],&Vents,ActiveCounts[1],
-		                   &volume_remaining,ventCount,DEMmetadata);
+	while((volume_remaining > 0)||(lastmotionCounter<maxLastMotionCount)) {
 		
-		printf("\rInundated Cells: %-7d; Volume Remaining: %10.2f",ActiveCounts[1],
-		       volume_remaining);
-
-		if (ret<0) {
-		/*This return indicates an error in Pulse module*/
-			printf("\n  Pulse Module returned an error code to [MAIN]!  Exiting\n");
-			return(-1);
-		}
-		else if (ret==0) {
-			if (volume_remaining) {
-			/*This return should not be possible*/
-				printf("\n  Pulse Module had an error [MAIN]!  Exiting\n");
+		if(volume_remaining > 0) {
+			/*PULSE MODULE*/
+			ret = PULSE(WorkingCells[1],&Vents,ActiveCounts[1],
+				                 &volume_remaining,ventCount,DEMmetadata);
+			if (ret<0) {
+			/*This return indicates an error in Pulse module*/
+				printf("\n  Pulse Module returned an error code to [MAIN]!  Exiting\n");
 				return(-1);
 			}
-			/*If ret==0, do not call Pulse or Distribute anymore!
-			  Break out of While loop.*/
-			break;
+			else if (ret==0) {
+				if (volume_remaining) {
+				/*This return should not be possible*/
+					printf("\n  Pulse Module had an error [MAIN]!  Exiting\n");
+					return(-1);
+				}
+				/*If ret==0, do not call Pulse or Distribute anymore!
+					Break out of While loop.*/
+				break;
+			}
+			/*if Pulse module successfully updated vents, ret will > 0.
+				Continue, call Distribute module.*/
+		printf("\rInundated Cells: %-7d; Volume Remaining: %10.2f",ActiveCounts[1],
+		       volume_remaining);
 		}
-		/*if Pulse module successfully updated vents, ret will > 0.
-		  Continue, write out xyz, call Distribute module.*/
+		else { /*if no more volume but flow still moving*/
+			printf("\rInundated Cells: %-7d; total dZ in flow: %10.2e",ActiveCounts[1],
+		       TotalMotion);
+		}
+		
 		
 		/*DISTRIBUTE MODULE*/
 		ret = DISTRIBUTE(dataGrid,WorkingCells[1],
@@ -190,8 +205,6 @@ DRIVER_00 is a VENT FLUX LIMITED flow scheme! The flow will end when all vents
 			return(-1);
 		}
 		
-		
-		
 		/*OUTPUT TO FILE EVERY PULSE*/
 		snprintf(pulseoutputfilename,15,"pulse_%04d.xyz",(++pulse_ct));
 		/*ret = OUTPUT(dataGrid,WorkingCells,workerCount,ActiveCounts,
@@ -200,7 +213,55 @@ DRIVER_00 is a VENT FLUX LIMITED flow scheme! The flow will end when all vents
 			printf("\nError [MAIN] from [OUTPUT]. Exiting.\n");
 			return(-1);
 		}*/
-	} /*End while more magma to erupt (while(volume_remaining>0))*/
+		
+		
+		
+		
+		
+		
+		/*TEST TO SEE IF FLOW IS STILL PROGRESSING, IF VOLUME HAS RUN OUT*/
+		
+		
+		
+		if(volume_remaining<=0) {
+			/*If this is the first time volume is 0, start new output line*/
+			if((volume_remaining_counter++)==0) printf("\n");
+			
+			/*MOTION TEST - If movement has stopped, end the flow*/
+			TotalMotion=0.0; /*Reset TotalMotion to 0*/
+			for(i=1;i<=ActiveCounts[1];i++) {
+				/*Add dv/dloop of all active cells*/
+				TotalMotion += fabs(WorkingCells[1][i].elev - WorkingCells[2][i].elev);
+			}
+			
+			/*Increment lastmotionCounter if flow has not changed, or reset to 0.*/
+			if(TotalMotion <= MinTotalMotion) ++lastmotionCounter;
+			else{ /*reset counter to zero and reset spare working cell values*/
+				lastmotionCounter=0;
+				for(i=1;i<=ActiveCounts[1];i++) {
+					/*redefine spare working cells elevation list as "elevations of last time"*/
+					WorkingCells[2][i].elev = WorkingCells[1][i].elev;
+				}
+			}
+			
+			/*POPCORN RULE - If a new cell hasn't been created in X seconds, end flow*/
+			if(lastActiveCounter!=ActiveCounts[1]) {/*If there's a new cell*/
+				LastInundationTime = time(NULL);   /*Reset Last inundation time*/
+				lastActiveCounter=ActiveCounts[1]; /*Reset lastActiveCounter*/
+			}
+			else { /*If there's no new cell*/
+				if(((unsigned) (time(NULL)-LastInundationTime))>=maxLastInundationTime) {
+					/*If max time to wait for a new cell has been reached, end flow*/
+					printf("\n Ending Flow because time elapsed since last cell was inundated (%u seconds)",
+					       (unsigned) (time(NULL)-LastInundationTime));
+					lastmotionCounter=maxLastMotionCount;
+				}
+			
+			}
+		}
+		
+		
+	} /*End while more magma to erupt (while(volume_remaining>0)and Flow Motion)*/
 	
 
 	/**********POST FLOW WRAP UP************************************************/
@@ -208,8 +269,8 @@ DRIVER_00 is a VENT FLUX LIMITED flow scheme! The flow will end when all vents
 	printf("\n\n                     Single Flow Complete!\n");
 	printf("Final Count: %d cells inundated.\n\n",
 	       ActiveCounts[1]);
-	       
-	       
+	
+	
 	/*CONSERVATION OF MASS CHECK*************************************************/
 	
 	/*Integrate to find total volume in all inundated cells.*/
@@ -228,7 +289,6 @@ DRIVER_00 is a VENT FLUX LIMITED flow scheme! The flow will end when all vents
 	else 
 		printf(" ERROR: MASS NOT CONSERVED! Excess: %0.2e m",
 		       tot_vol_out-tot_vol_in);
-	
 	
 	/*OUTPUT*********************************************************************/
 	/*Filenames from configuration file
@@ -256,6 +316,10 @@ DRIVER_00 is a VENT FLUX LIMITED flow scheme! The flow will end when all vents
 				return(-1);
 			}
 		}
+	}
+	if(ret){
+		printf("\nError [MAIN] from [OUTPUT]. Exiting.\n");
+		return(-1);
 	}
 	
 	/*Calculate simulation time elapsed*/

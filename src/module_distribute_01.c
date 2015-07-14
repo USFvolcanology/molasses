@@ -2,8 +2,16 @@
 
 int DISTRIBUTE(Location **dataGrid, Cell *actList, unsigned *actCt,
                double *gridmetadata){
-/*Module: DISTRIBUTE
+/*Module: DISTRIBUTE_01
 	args: Global Grid, Active List, Active Count, DEM Metadata
+	
+	DISTRIBUTE_01 is a BLIND-SHARE Distribution scheme! All lower neighbors are
+	              given an amount of lava proportional to their distance from the
+	              active vent, NOT based on their relative elevations heights.
+	              
+	              It is advised that this is used with a DRIVER module that ends
+	              when the flow is no longer deforming, as opposed to a DRIVER
+	              module that ends when the volume at the vent has run out.
 */
 
 	unsigned counter = 1;
@@ -18,6 +26,7 @@ int DISTRIBUTE(Location **dataGrid, Cell *actList, unsigned *actCt,
 	double total_elev_diff;
 	double distribute_volume;
 	char parentcode;
+	unsigned total_distribute = 0;
 	
 	/*printf("Entered [DISTRIBUTE]\n");*/
 	
@@ -39,6 +48,8 @@ int DISTRIBUTE(Location **dataGrid, Cell *actList, unsigned *actCt,
 			
 			else if(neigh_ct){
 			/*If the neighbor list is not empty*/
+				total_distribute++; /*This is a counter of cells that have shared lava*/
+				
 				/*define amount of lava to be shared*/
 				distribute_volume = actList[counter].thickness;
 				
@@ -50,9 +61,8 @@ int DISTRIBUTE(Location **dataGrid, Cell *actList, unsigned *actCt,
 					                     (abs(neigh_list[n].row-actList[counter].row)+
 					                     abs(neigh_list[n].col-actList[counter].col)));
 					
-					/*for each neighbor add relief between it and current cell to bookkeeper*/
-					total_elev_diff += neigh_distance[n] * 
-					                   (actList[counter].elev - neigh_list[n].elev);
+					/*add each neighbor bookkeeper, times its distance factor*/
+					total_elev_diff += neigh_distance[n];
 				}
 				
 				for(n=0;n<neigh_ct;n++) {
@@ -62,8 +72,7 @@ int DISTRIBUTE(Location **dataGrid, Cell *actList, unsigned *actCt,
 					ncol = neigh_list[n].col;
 					
 					/*define neighbor's effective elevation difference*/
-					neigh_diff = neigh_distance[n] * 
-					             (actList[counter].elev - neigh_list[n].elev);
+					neigh_diff = neigh_distance[n];
 					
 					if(!dataGrid[nrow][ncol].active){
 					/*if neighbor not in active list, Activate neighbor cell*/
@@ -120,5 +129,5 @@ int DISTRIBUTE(Location **dataGrid, Cell *actList, unsigned *actCt,
 	printf("         Inundated %u cells.\n",*actCt);*/
 	
 	/*return 0 for a successful round of distribution.*/
-	return(0);
+	return(total_distribute);
 }

@@ -90,8 +90,7 @@ int DISTRIBUTE(Location **dataGrid, Cell *actList, unsigned *actCt,
 						else if(nrow<actList[counter].row) parentcode |= 1 << 3;
 						
 						/*ACTIVATE*/
-						*actCt = ACTIVATE(dataGrid, actList, nrow, ncol,
-						                           *actCt, parentcode, 0);
+						*actCt = ACTIVATE(dataGrid,actList,nrow,ncol,*actCt,parentcode,0);
 						/*args: global grid, active list, row, column, count,
 						  parent, vent (0=no)*/
 					}

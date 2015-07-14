@@ -1,6 +1,6 @@
-#include "module_demloader_00.h"
+#include "prototypes.h"
 
-double *DEM_LOADER(char *DEMfilename, Location ***grid) {
+double *DEM_LOADER(char *DEMfilename, Location ***grid, char *modeltype) {
 /*Module DEM_LOADER_GDAL
 	Accepts a file name and a null data grid
 	Checks for validity of raster file
@@ -102,40 +102,158 @@ double *DEM_LOADER(char *DEMfilename, Location ***grid) {
 	/*Allocate memory the length of a single row in the DEM*/
 	pafScanline = (float *) CPLMalloc(sizeof(float)*DEMGeoTransform[2]);
 	
-	printf("              Loading DEM into Global Data Grid...\n");
+	if(!strcmp(modeltype,"TOPOG")) {
+		printf("              Loading DEM into Global Data Grid...\n");
+		
+		/*allocate memory for data grid*/
+		*grid = GLOBALDATA_INIT((unsigned) DEMGeoTransform[4], 
+			                      (unsigned) DEMGeoTransform[2]);
+		DEMgrid = *grid; /*Assign pointer position to DEMgrid variable*/
+		
+		for(i=0;i<DEMGeoTransform[4];i++) { /*For each row*/
+			/*calculate row so bottom row is read into data array first*/
+			YOff = (DEMGeoTransform[4]-1) - i;
 	
-	for(i=0;i<DEMGeoTransform[4];i++) { /*For each row*/
-		/*calculate row so bottom row is read into data array first*/
-		YOff = (DEMGeoTransform[4]-1) - i;
+			/*Read elevation data from row in input raster*/
+			if((GDALRasterIO(DEMBand, GF_Read, 0, YOff, DEMGeoTransform[2], 1, 
+					             pafScanline, DEMGeoTransform[2], 1, GDT_Float32, 0, 0))
+				 != CE_None) {
+				printf("\n[DEM_LOADER] DEM Elevation Data could not be read!\n");
+				printf("  File:  %s\n", DEMfilename);
+				return((double*) NULL);
+			}
+	
+			/*Status Bar*/
+			if((i%50)==0) {
+				k=0;
+				printf("\r");
+				while(k<(DEMGeoTransform[4]-1)){
 		
-		/*Read elevation data from row in input raster*/
-		if((GDALRasterIO(DEMBand, GF_Read, 0, YOff, DEMGeoTransform[2], 1, 
-		                 pafScanline, DEMGeoTransform[2], 1, GDT_Float32, 0, 0))
-		   != CE_None) {
-			printf("\n[DEM_LOADER] DEM Elevation Data could not be read!\n");
-			printf("  File:  %s\n", DEMfilename);
-			return((double*) NULL);
+					if (k<i) printf("=");
+					else if((k-((DEMGeoTransform[4]-1)/60))<i) printf(">");
+					else printf(" ");
+					k+=DEMGeoTransform[4]/60;
+				} printf("| %3d%%",(int) (100*i/(DEMGeoTransform[4]-1)));
+			}
+	
+			/*Write elevation data column by column into 2D array using DEMgrid variable*/
+			for(j=0;j<DEMGeoTransform[2];j++) {
+				DEMgrid[i][j].dem_elev = pafScanline[j];
+			}
 		}
+	}
+	
+	if(strcmp(modeltype,"RESID")==0) {
+		printf("              Loading RESIDUAL THICKNESS MODEL into Global Data Grid...\n");
 		
-		/*Status Bar*/
-		if((i%50)==0) {
-			k=0;
-			printf("\r");
-			while(k<(DEMGeoTransform[4]-1)){
-			
-				if (k<i) printf("=");
-				else if((k-((DEMGeoTransform[4]-1)/60))<i) printf(">");
-				else printf(" ");
-				k+=DEMGeoTransform[4]/60;
-			} printf("| %3d%%",(int) (100*i/(DEMGeoTransform[4]-1)));
+		DEMgrid = *grid; /*Assign pointer position to DEMgrid variable*/
+		
+		for(i=0;i<DEMGeoTransform[4];i++) { /*For each row*/
+			/*calculate row so bottom row is read into data array first*/
+			YOff = (DEMGeoTransform[4]-1) - i;
+	
+			/*Read elevation data from row in input raster*/
+			if((GDALRasterIO(DEMBand, GF_Read, 0, YOff, DEMGeoTransform[2], 1, 
+					             pafScanline, DEMGeoTransform[2], 1, GDT_Float32, 0, 0))
+				 != CE_None) {
+				printf("\n[DEM_LOADER] Residual Thickness Data (raster) could not be read!\n");
+				printf("  File:  %s\n", DEMfilename);
+				return((double*) NULL);
+			}
+	
+			/*Status Bar*/
+			if((i%50)==0) {
+				k=0;
+				printf("\r");
+				while(k<(DEMGeoTransform[4]-1)){
+		
+					if (k<i) printf("=");
+					else if((k-((DEMGeoTransform[4]-1)/60))<i) printf(">");
+					else printf(" ");
+					k+=DEMGeoTransform[4]/60;
+				} printf("| %3d%%",(int) (100*i/(DEMGeoTransform[4]-1)));
+			}
+	
+			/*Write elevation data column by column into 2D array using DEMgrid variable*/
+			for(j=0;j<DEMGeoTransform[2];j++) {
+				DEMgrid[i][j].residual = pafScanline[j];
+			}
 		}
+	}
+	
+	if(strcmp(modeltype,"T_UNC")==0) {
+		printf("              Loading ELEVATION UNCERTAINTY into Global Data Grid...\n");
 		
-		/*Write elevation data column by column into 2D array using DEMgrid variable*/
-		for(j=0;j<DEMGeoTransform[2];j++) {
-			DEMgrid[i][j].elev    = pafScanline[j];
-			/*DEMgrid[i][j].owner   = 0;
-			  DEMgrid[i][j].active  = 0;
-			  DEMgrid[i][j].AOICode = 0;*/
+		DEMgrid = *grid; /*Assign pointer position to DEMgrid variable*/
+		
+		for(i=0;i<DEMGeoTransform[4];i++) { /*For each row*/
+			/*calculate row so bottom row is read into data array first*/
+			YOff = (DEMGeoTransform[4]-1) - i;
+	
+			/*Read elevation data from row in input raster*/
+			if((GDALRasterIO(DEMBand, GF_Read, 0, YOff, DEMGeoTransform[2], 1, 
+					             pafScanline, DEMGeoTransform[2], 1, GDT_Float32, 0, 0))
+				 != CE_None) {
+				printf("\n[DEM_LOADER] Elevation Uncertainty Data (raster) could not be read!\n");
+				printf("  File:  %s\n", DEMfilename);
+				return((double*) NULL);
+			}
+	
+			/*Status Bar*/
+			if((i%50)==0) {
+				k=0;
+				printf("\r");
+				while(k<(DEMGeoTransform[4]-1)){
+		
+					if (k<i) printf("=");
+					else if((k-((DEMGeoTransform[4]-1)/60))<i) printf(">");
+					else printf(" ");
+					k+=DEMGeoTransform[4]/60;
+				} printf("| %3d%%",(int) (100*i/(DEMGeoTransform[4]-1)));
+			}
+	
+			/*Write elevation data column by column into 2D array using DEMgrid variable*/
+			for(j=0;j<DEMGeoTransform[2];j++) {
+				DEMgrid[i][j].elev_uncert = pafScanline[j];
+			}
+		}
+	}
+	
+	if(strcmp(modeltype,"AOI_C")==0) {
+		printf("              Loading AREAS OF INTEREST into Global Data Grid...\n");
+		
+		DEMgrid = *grid; /*Assign pointer position to DEMgrid variable*/
+		
+		for(i=0;i<DEMGeoTransform[4];i++) { /*For each row*/
+			/*calculate row so bottom row is read into data array first*/
+			YOff = (DEMGeoTransform[4]-1) - i;
+	
+			/*Read elevation data from row in input raster*/
+			if((GDALRasterIO(DEMBand, GF_Read, 0, YOff, DEMGeoTransform[2], 1, 
+					             pafScanline, DEMGeoTransform[2], 1, GDT_Float32, 0, 0))
+				 != CE_None) {
+				printf("\n[DEM_LOADER] Areas of Interes Data (raster) could not be read!\n");
+				printf("  File:  %s\n", DEMfilename);
+				return((double*) NULL);
+			}
+	
+			/*Status Bar*/
+			if((i%50)==0) {
+				k=0;
+				printf("\r");
+				while(k<(DEMGeoTransform[4]-1)){
+		
+					if (k<i) printf("=");
+					else if((k-((DEMGeoTransform[4]-1)/60))<i) printf(">");
+					else printf(" ");
+					k+=DEMGeoTransform[4]/60;
+				} printf("| %3d%%",(int) (100*i/(DEMGeoTransform[4]-1)));
+			}
+	
+			/*Write elevation data column by column into 2D array using DEMgrid variable*/
+			for(j=0;j<DEMGeoTransform[2];j++) {
+				DEMgrid[i][j].AOICode = pafScanline[j];
+			}
 		}
 	}
 	

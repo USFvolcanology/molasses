@@ -2,8 +2,8 @@
 
 Cell *NEIGHBOR_ID(Cell current_cell, Location **grid, double *gridmetadata,
                   Cell *list, int *neighbor_count) {
-/*Module: NEIGHBOR_ID (4 Directions)
-	identifies 4-neighbors, List of Cells (4 long) updated, # of eligible-for-lava
+/*Module: NEIGHBOR_ID (8 Directions)
+	identifies 8-neighbors, List of Cells (8 long) updated, # of eligible-for-lava
 	neighbors returned
 	
 	*Accepts a Cell structure (active cell location)
@@ -91,12 +91,12 @@ Cell *NEIGHBOR_ID(Cell current_cell, Location **grid, double *gridmetadata,
 	**FOR EACH DIRECTION, TEST FOR PARENTAGE, ACTIVE STATUS, ELEVATION
 	****/
 	
-	
 	/*NORTH*/
 	if(!(parents & (1 << 3))) { 
 	/*if 3rd parent bit False, UPWARD cell is not parent: Continue*/
 		if(!(grid[up][cur_col].active)) {
 		/*if UPWARD cell is inactive in Global Grid, use grid elevation value*/
+			
 			if(current_cell.elev > grid[up][cur_col].elev) {
 			/*if active cell's elevation is higher than UPWARD cell, flag up cell*/
 				neighbor_list[*neighbor_count].row  = up;
@@ -140,7 +140,7 @@ Cell *NEIGHBOR_ID(Cell current_cell, Location **grid, double *gridmetadata,
 		}
 	}
 	
-		/*WEST*/
+	/*WEST*/
 	if(!(parents & (1 << 2))) { 
 	/*if 2nd parent bit False, LEFTWARD cell is not parent: Continue*/
 		if(!(grid[cur_row][left].active)) {
@@ -187,6 +187,106 @@ Cell *NEIGHBOR_ID(Cell current_cell, Location **grid, double *gridmetadata,
 			}
 		}
 	}
+	
+	/*DIAGONALS*/
+	
+	/*SOUTHWEST*/
+	if(!(parents & (1 << 5))) { 
+	/*if 5th parent bit False, LEFT-DOWNWARD cell is not parent: Continue*/
+		if(!(grid[down][left].active)) {
+		/*if L-D-WARD cell is inactive in Global Grid, use grid elevation value*/
+			if(current_cell.elev > grid[down][left].elev) {
+			/*if active cell's elevation is higher than L-D-WARD cell, flag L-D cell*/
+				neighbor_list[*neighbor_count].row  = down;
+				neighbor_list[*neighbor_count].col  = left;
+				neighbor_list[*neighbor_count].elev = grid[down][left].elev;
+				*neighbor_count+=1;
+			}
+		} else {
+		/*if L-D-WARD cell is active in Global Grid, use active list elev value*/
+			if(current_cell.elev > list[grid[down][left].active].elev) {
+			/*if active cell's elevation is higher than L-D-WARD cell, flag L-D cell*/
+				neighbor_list[*neighbor_count].row  = down;
+				neighbor_list[*neighbor_count].col  = left;
+				neighbor_list[*neighbor_count].elev = list[grid[down][left].active].elev;
+				*neighbor_count+=1;
+			}
+		}
+	}
+	
+	/*SOUTHEAST*/
+	if(!(parents & (1 << 4))) { 
+	/*if 4th parent bit False, RIGHT-DOWNWARD cell is not parent: Continue*/
+		if(!(grid[down][right].active)) {
+		/*if R-D-WARD cell is inactive in Global Grid, use grid elevation value*/
+			if(current_cell.elev > grid[down][right].elev) {
+			/*if active cell's elevation is higher than R-D-WARD cell, flag R-D cell*/
+				neighbor_list[*neighbor_count].row  = down;
+				neighbor_list[*neighbor_count].col  = right;
+				neighbor_list[*neighbor_count].elev = grid[down][right].elev;
+				*neighbor_count+=1;
+			}
+		} else {
+		/*if R-D-WARD cell is active in Global Grid, use active list elev value*/
+			if(current_cell.elev > list[grid[down][right].active].elev) {
+			/*if active cell's elevation is higher than R-D-WARD cell, flag R-D cell*/
+				neighbor_list[*neighbor_count].row  = down;
+				neighbor_list[*neighbor_count].col  = right;
+				neighbor_list[*neighbor_count].elev = list[grid[down][right].active].elev;
+				*neighbor_count+=1;
+			}
+		}
+	}
+	
+	/*NORTHEAST*/
+	if(!(parents & (1 << 7))) { 
+	/*if 7th parent bit False, RIGHT-UPWARD cell is not parent: Continue*/
+		if(!(grid[up][right].active)) {
+		/*if R-U-WARD cell is inactive in Global Grid, use grid elevation value*/
+			if(current_cell.elev > grid[up][right].elev) {
+			/*if active cell's elevation is higher than R-U-WARD cell, flag R-U cell*/
+				neighbor_list[*neighbor_count].row  = up;
+				neighbor_list[*neighbor_count].col  = right;
+				neighbor_list[*neighbor_count].elev = grid[up][right].elev;
+				*neighbor_count+=1;
+			}
+		} else {
+		/*if R-U-WARD cell is active in Global Grid, use active list elev value*/
+			if(current_cell.elev > list[grid[up][right].active].elev) {
+			/*if active cell's elevation is higher than R-U-WARD cell, flag R-U cell*/
+				neighbor_list[*neighbor_count].row  = up;
+				neighbor_list[*neighbor_count].col  = right;
+				neighbor_list[*neighbor_count].elev = list[grid[up][right].active].elev;
+				*neighbor_count+=1;
+			}
+		}
+	}
+	
+	
+	/*NORTHWEST*/
+	if(!(parents & (1 << 6))) { 
+	/*if 6th parent bit False, LEFT-UPWARD cell is not parent: Continue*/
+		if(!(grid[up][left].active)) {
+		/*if L-U-WARD cell is inactive in Global Grid, use grid elevation value*/
+			if(current_cell.elev > grid[up][left].elev) {
+			/*if active cell's elevation is higher than L-U-WARD cell, flag L-U cell*/
+				neighbor_list[*neighbor_count].row  = up;
+				neighbor_list[*neighbor_count].col  = left;
+				neighbor_list[*neighbor_count].elev = grid[up][left].elev;
+				*neighbor_count+=1;
+			}
+		} else {
+		/*if L-UWARD cell is active in Global Grid, use active list elev value*/
+			if(current_cell.elev > list[grid[up][left].active].elev) {
+			/*if active cell's elevation is higher than L-UWARD cell, flag L-U cell*/
+				neighbor_list[*neighbor_count].row  = up;
+				neighbor_list[*neighbor_count].col  = left;
+				neighbor_list[*neighbor_count].elev = list[grid[up][left].active].elev;
+				*neighbor_count+=1;
+			}
+		}
+	}
+	
 	
 	
 	/*neighbor counter is updated as a pointer and is passed back to [DISTRIBUTE]*/

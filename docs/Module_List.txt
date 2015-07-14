@@ -1,0 +1,58 @@
+Available Modules for MOLASSES
+
+MODULE NAME
+  code
+    description
+    
+Driver
+  00
+    Flow Limited Model: flow will stop when volume remaining to erupt = 0, distribute module is called once more.
+  01
+    Deformation Limited Model: flow will stop when the total vertical deformation of all cells < 1e-11 meters, or a new cell has not been created in 10 seconds.
+
+Initialize
+  00
+    A Configuration File is read in. Searches for multiple vents and multiple output file types.
+
+DEM_loader
+  00
+    Loads a raster through GDAL to input global elevations, elevation uncertainties, or residual thicknesses.
+
+Array_initializer
+  00
+    Allocates memory for the global data grid and the active list
+
+Flow_initializer
+  00
+    Activates vent locations and adds user-input uncertainty to the elevation map
+
+Pulse
+  00
+    Delivers lava to vent locations if there is still volume to erupt at each
+
+Distribute
+  00
+    Slope-based sharing: Will share lava to neighboring cells proportional to the slope or relief in a given direction
+  01
+    Equal sharing: Will share lava evenly to all neighboring cells which are below the current location
+  02
+    Fair-share: not functional yet
+  03
+    Slope-based sharing with updating parent-child relationships: If a cell gives lava to another, it cannot later receive lava from that neighbor during each call to the distribute function. Each time the function is called, the P-C relationships are reset.
+  04
+    Equal sharing with updating parent-child relationships
+
+Neighbor_ID
+  00
+    4-connected: Neighbors will be found in the four cardinal directions of the Global Data Grid (up down left and right)
+  01
+    8-connected: Neighbors will be found in the eight ordinal directions of the Global Data Grid (up down left right up-left up-right down-right down-left)
+
+Activate
+  00
+    Uses the input parent code to define parent-child relationships
+  01
+    Ignores the input parent code, defining exactly 0 parent-child relationships.
+Output
+  00
+    Flows and/or the global data grid will be output based on a code. Outputs include an ASCII X,Y,Thickness list of the flow, a Binary (1 or 0) hit map, a thickness map, an underlying elevation map, or a new elevation (elevation + thickness) map. All maps are output as .tifs.

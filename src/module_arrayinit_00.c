@@ -1,4 +1,4 @@
-#include "module_arrayinit_00.h"
+#include "prototypes.h"
 
 Cell **ACTIVELIST_INIT(unsigned workerCt, unsigned capacity){
 /*Reserves memory for workerCt number of lists with size [capacity]
@@ -9,7 +9,9 @@ Cell **ACTIVELIST_INIT(unsigned workerCt, unsigned capacity){
 	
 	/*Allocate row pointers*/
 	if((m=(Cell**)malloc((workerCt+1)*sizeof(Cell*)))==NULL){
-		printf("[ACTIVELIST_INIT]\n   No more memory!! Exiting\n");
+		printf("[ACTIVELIST_INIT]\n");
+		printf("   NO MORE MEMORY: Tried to allocate memory for %u Lists!! Exiting\n",
+		       (workerCt+1));
 		exit(0);
 	}
 	
@@ -17,7 +19,10 @@ Cell **ACTIVELIST_INIT(unsigned workerCt, unsigned capacity){
 	/*row 0 isnt enumerated, and will not be used. start at 1.*/
 	for(i=1;i<=workerCt;i++){
 		if((m[i]=(Cell*)malloc((capacity + 1)*sizeof(Cell)))==NULL){
-			printf("[ACTIVELIST_INIT]\n   No more memory!! Exiting\n");
+		printf("[ACTIVELIST_INIT]\n");
+		printf("   NO MORE MEMORY: Tried to allocate memory for %u cells in %u Lists!!",
+		       capacity,(workerCt+1));
+		printf(" Exiting\n");
 			exit(0);
 		}
 	}
@@ -35,7 +40,9 @@ Location **GLOBALDATA_INIT(unsigned rows,unsigned cols){
 	
 	/*Allocate row pointers*/
 	if((m=(Location**)malloc((unsigned)(rows + 1)*sizeof(Location*)))==NULL){
-		printf("[GLOBALDATA_INIT]\n   No more memory!! Exiting\n");
+		printf("[GLOBALDATA_INIT]\n");
+		printf("   NO MORE MEMORY: Tried to allocate memory for %u Rows!! Exiting\n",
+		       rows);
 		exit(0);
 	}
 	
@@ -43,7 +50,10 @@ Location **GLOBALDATA_INIT(unsigned rows,unsigned cols){
 	
 	for(i=0;i<=rows;i++){
 		if((m[i]=(Location*)malloc((cols + 1)*sizeof(Location)))==NULL){
-			printf("[GLOBALDATA_INIT]\n   No more memory!! Exiting\n");
+		printf("[GLOBALDATA_INIT]\n");
+		printf("   NO MORE MEMORY: Tried to allocate memory for %u cols in %u rows!!",
+		       cols,rows);
+		printf(" Exiting\n");
 			exit(0);
 		}
 	}

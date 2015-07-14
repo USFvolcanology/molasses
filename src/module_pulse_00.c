@@ -1,4 +1,4 @@
-#include "module_pulse_00.h"
+#include "prototypes.h"
 
 int PULSE(Cell *actList, VentArr **ventList, unsigned actCt,
           double *vol_remaining, unsigned vent_cell_ct, double *gridinfo){
