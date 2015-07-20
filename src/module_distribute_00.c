@@ -1,6 +1,6 @@
 #include "prototypes.h"
 
-int DISTRIBUTE(Location **dataGrid, Cell *CAList, unsigned *activeCount,
+int DISTRIBUTE(DataCell **dataGrid, Automata *CAList, unsigned *activeCount,
                double *gridMetadata){
 /*DISTRIBUTE_00 IMMEDIATELY UPDATES Cellular Automata and determines how much
                 lava to share between neighbors PROPORTIONAL TO SLOPE.
@@ -40,8 +40,8 @@ int DISTRIBUTE(Location **dataGrid, Cell *CAList, unsigned *activeCount,
 	unsigned c = 1;
 
 	/*Neighborhood Variables*/
-	Cell     *neighborCAList;   /*CA List containing neighbor information       */
-	int      neighborCount;     /*Number of lava-accepting cells in neighborhood*/
+	Automata *neighborCAList;   /*CA List containing neighbor information       */
+	int      neighborCount;     /*NumbeTAME r of lava-accepting cells in neighborhood*/
 	double   neighborDist[8];   /*Weight: NESW cells = 1, corner cells = 2^-0.5 */
 	double   neighborRelief[8]; /*Cell-Cell elevation difference*/
 	double   neighborEffRelief; /*Cell-Cell elev difference * neigh. dist weight*/

@@ -11,7 +11,7 @@
 #include <string.h>
 
 /*Active Cells*/
-typedef struct Cell {
+typedef struct Automata {
 	unsigned row;
 	unsigned col;
 	double elev;
@@ -20,10 +20,10 @@ typedef struct Cell {
 	double lava_out;
 	char parents;
 	char vent;
-} Cell;
+} Automata;
 
 /*Global Data Locations*/
-typedef struct Location {
+typedef struct DataCell {
 	double elev;
 	unsigned active;
 	char AOICode;
@@ -31,7 +31,7 @@ typedef struct Location {
 	double residual;
 	double random_code;
 	double dem_elev;
-} Location;
+} DataCell;
 
 /*Vent Information*/
 typedef struct VentArr {

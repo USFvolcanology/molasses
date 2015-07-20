@@ -1,7 +1,7 @@
 #include "prototypes.h"
 
-Cell *NEIGHBOR_ID(Cell cCell, Location **grid, double *gridMetadata,
-                  Cell *CAList, int *neighborCount) {
+Automata *NEIGHBOR_ID(Automata cCell, DataCell **grid, double *gridMetadata,
+                  Automata *CAList, int *neighborCount) {
 /*Module: NEIGHBOR_ID (8 Directions)
 	identifies 8-neighbors, List of Cells (8 long) updated, # of eligible-for-lava
 	neighbors returned
@@ -25,27 +25,14 @@ Cell *NEIGHBOR_ID(Cell cCell, Location **grid, double *gridMetadata,
 	
 	char parents;                      /*Parent bitcode*/
 	int uRow,dRow,lCol,rCol,cRow,cCol; /*Row, Col addresses (center,up,down,L,R)*/
-	Cell *neighborList;
+	Automata *neighborList;
 	
 	/*Create the neighbor list array*/
-	if((neighborList = (Cell*)malloc(8 * sizeof(Cell)))==NULL) {
+	if((neighborList = (Automata*)malloc(8 * sizeof(Automata)))==NULL) {
 		printf("\n[NEIGHBOR_ID]   No more memory while creating Neighbor List!!");
 		printf("  Exiting.\n");
 		exit(0);
 	}
-	
-	/*Test to see if neighbor list is large enough for this module/is declared*/
-	/*if ((n = sizeof(neighborList)/sizeof(Cell)) < 8) {
-		printf("Error in [NEIGHBOR_ID]: Neighbor List array received is too small\n");
-		return(-9);
-	}*/
-	
-	/*Reset neighborList values to 0*/
-	/*for (i=0;i<n;i++) {
-		neighborList[i].row  = 0;
-		neighborList[i].col  = 0;
-		neighborList[i].elev = 0;
-	}*/
 	
 	*neighborCount = 0; /*Reset neighbor counter*/
 	

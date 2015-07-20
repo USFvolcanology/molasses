@@ -1,6 +1,6 @@
 #include "prototypes.h"
 
-int PULSE(Cell *actList, VentArr **ventList, unsigned actCt,
+int PULSE(Automata *actList, VentArr **ventList, unsigned actCt,
           double *volumeRemaining, unsigned ventCount, double *gridinfo){
 /*Module: PULSE
 	If volume remains to be erupted, delivers a pre-defined pulse of magma to each

@@ -1,7 +1,7 @@
 #include "prototypes.h"
 
-unsigned ACTIVATE(Location **dataGrid, Cell *CAList, unsigned row, unsigned col, 
-                  unsigned aCt, char parent, char vent) {
+unsigned ACTIVATE(DataCell **dataGrid, Automata *CAList, unsigned row, 
+                  unsigned col, unsigned aCt, char parent, char vent) {
 /*ACTIVATE_00 is a PARENT-CHILD RELATIONSHIP Activation Sceme! Parents-Child
   Relationships are recorded.*/
 

@@ -1,6 +1,6 @@
 #include "prototypes.h"
 
-double *DEM_LOADER(char *DEMfilename, Location ***grid, char *modeltype) {
+double *DEM_LOADER(char *DEMfilename, DataCell ***grid, char *modeltype) {
 /*Module DEM_LOADER_GDAL
 	Accepts a file name and a null data grid
 	Checks for validity of raster file
@@ -19,7 +19,7 @@ double *DEM_LOADER(char *DEMfilename, Location ***grid, char *modeltype) {
 	GDALRasterBandH DEMBand;
 	double          *DEMGeoTransform;
 	float           *pafScanline;
-	Location        **DEMgrid;
+	DataCell        **DEMgrid;
 
 	unsigned        YOff;
 	unsigned        i,j;

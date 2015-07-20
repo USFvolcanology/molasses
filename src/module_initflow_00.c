@@ -1,6 +1,6 @@
 #include "prototypes.h"
 
-int INIT_FLOW (Location **dataGrid, Cell ***CAList, VentArr *ventList,
+int INIT_FLOW (DataCell **dataGrid, Automata ***CAList, VentArr *ventList,
                unsigned *CAListCount, unsigned *CAListSize, unsigned ventCount,
                unsigned **activects, double *gridInfo, double *totalVolume) {
 /* Module INIT_FLOW
@@ -22,7 +22,7 @@ int INIT_FLOW (Location **dataGrid, Cell ***CAList, VentArr *ventList,
 */
 	
 	unsigned ventRow, ventCol;
-	Cell **IFCAList; /*working array for CAList in Init_Flow module*/
+	Automata **IFCAList; /*working array for CAList in Init_Flow module*/
 	unsigned *IFactivects; /*working array for active counts*/
 	int i,j,k;
 	double minResidual = 0;

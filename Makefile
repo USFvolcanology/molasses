@@ -2,14 +2,14 @@
 #The Floor is Lava.
 
 #MODULES: Alter as needed. 
-#Check doc/ for module codes and destriptions.
+#Check docs/ for module codes and destriptions.
 export driver            = 00
 export initialize        = 00
 export DEM_loader        = 00
 export array_initializer = 00
 export flow_initializer  = 00
 export pulse             = 00
-export distribute        = 01
+export distribute        = 04
 export neighbor_ID       = 01
 export activate          = 01
 export output            = 00

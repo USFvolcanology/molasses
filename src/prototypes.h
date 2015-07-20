@@ -2,15 +2,15 @@
 #include "gdal.h"     /* GDAL */
 #include "cpl_conv.h" /* GDAL for CPLMalloc() */
 
-int PULSE(Cell*,VentArr**,unsigned,double*,unsigned,double*);
-	/*args: 1st Worker's Active List,
+int PULSE(Automata*,VentArr**,unsigned,double*,unsigned,double*);
+	/*args: Active CA List,
 	        Active Count,
 	        Total Pulse Volume, 
 	        Remaining Total Volume,
 	        Vent Cell Count
 	*/
 
-int OUTPUT(Location**, Cell*, unsigned, char*, char, double*, const char*);
+int OUTPUT(DataCell**, Automata*, unsigned, char*, char, double*, const char*);
 	/*args:
 		Global Grid,
 		Flow List,
@@ -21,7 +21,7 @@ int OUTPUT(Location**, Cell*, unsigned, char*, char, double*, const char*);
 		DEM projection metadata
 	*/
 
-unsigned ACTIVATE(Location**,Cell*,unsigned,unsigned,unsigned,char,char);
+unsigned ACTIVATE(DataCell**,Automata*,unsigned,unsigned,unsigned,char,char);
 	/*args:
 		Global Grid,
 		Active List,
@@ -33,7 +33,7 @@ unsigned ACTIVATE(Location**,Cell*,unsigned,unsigned,unsigned,char,char);
 		residual
 	*/
 
-int INIT_FLOW (Location**,Cell***,VentArr*,unsigned*,unsigned*,unsigned,
+int INIT_FLOW (DataCell**,Automata***,VentArr*,unsigned*,unsigned*,unsigned,
                unsigned**,double*,double*);
 	/*args:
 		data array,
@@ -48,7 +48,7 @@ int INIT_FLOW (Location**,Cell***,VentArr*,unsigned*,unsigned*,unsigned,
 		residual
 	*/
 
-Cell *NEIGHBOR_ID(Cell,Location**,double*,Cell*,int*);
+Automata *NEIGHBOR_ID(Automata,DataCell**,double*,Automata*,int*);
 	/*args:   Active Cell,
 	          Global Grid,
 	          Global Grid Metadata,
@@ -57,12 +57,12 @@ Cell *NEIGHBOR_ID(Cell,Location**,double*,Cell*,int*);
 	  return: neighbor_list
 	*/
 
-Cell **ACTIVELIST_INIT(unsigned,unsigned);
-Location **GLOBALDATA_INIT(unsigned,unsigned);
+Automata **ACTIVELIST_INIT(unsigned,unsigned);
+DataCell **GLOBALDATA_INIT(unsigned,unsigned);
 	/*args: rows, colums
 	*/
 
-int DISTRIBUTE(Location**,Cell*,unsigned*,double*);
+int DISTRIBUTE(DataCell**,Automata*,unsigned*,double*);
 	/*args: Global Grid, Active List, Active Count, DEM metadata*/
 
 int INITIALIZE(char*,char***,double*,double*,VentArr**,unsigned*);
@@ -75,7 +75,7 @@ int INITIALIZE(char*,char***,double*,double*,VentArr**,unsigned*);
 		Vent Count
 	*/
 
-double *DEM_LOADER(char*, Location***,char*);
+double *DEM_LOADER(char*, DataCell***,char*);
 	/*args: DEM file name, Null Global Data Grid pointer, Model Code*/
 	/*Model Codes:
 	  ELEV

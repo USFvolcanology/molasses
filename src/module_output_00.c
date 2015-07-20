@@ -1,6 +1,6 @@
 #include "prototypes.h"
 
-int OUTPUT(Location **dataGrid, Cell *flowList, unsigned flowcount,
+int OUTPUT(DataCell **dataGrid, Automata *flowList, unsigned flowcount,
            char *outputfilename, char outputtype, double *geotransform,
            const char *projection) {
 /*Module OUTPUT

@@ -26,8 +26,8 @@ DRIVER_00 is a VENT FLUX LIMITED flow scheme! The flow will end when all vents
 	char     tempFilename[15];          /*A temporary file path for whatever use*/
 	
 	/*Main Arrays*/
-	Location **dataGrid;                /*Global Data Grid                      */
-	Cell     **CAList;                  /*Cellular Automata Lists (Active Cells)*/
+	DataCell **dataGrid;                /*Global Data Grid                      */
+	Automata **CAList;                  /*Cellular Automata Lists (Active Cells)*/
 	VentArr  *Vents;                    /*Source Vent List                      */
 	unsigned *ActiveCounter;            /*Number of Active Cells in CA List     */
 	

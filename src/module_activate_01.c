@@ -1,7 +1,7 @@
 #include "prototypes.h"
 
-unsigned ACTIVATE(Location **dataGrid, Cell *CAList, unsigned row, unsigned col,
-                  unsigned aCt, char parent, char vent) {
+unsigned ACTIVATE(DataCell **dataGrid, Automata *CAList, unsigned row, 
+                  unsigned col, unsigned aCt, char parent, char vent) {
 /*ACTIVATE_01 is a PARENT-LESS Activation Sceme! No parents are recorded.*/
 
 /*Module: ACTIVATE
