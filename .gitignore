@@ -1,2 +1,4 @@
 *~
 *.o
+*.tar.gz
+*molasses

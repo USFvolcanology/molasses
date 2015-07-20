@@ -3,40 +3,51 @@
 int INITIALIZE(char *CFGfilename, char ***Filenames, double *param_modalthickness,
                double *param_elevunc, VentArr **Vents, unsigned *ventct) {
 /*Module INITIALIZE
-	Accepts a configuration file and returns model variables. 
+	Accepts a configuration file and returns model variables:
 	
 	string DEM_FILE
-	string FLOW_FILE
-	double  MODAL_THICKNESS
-	double  PULSE_VOLUME
-	double  TOTAL_VOLUME
-	double  VENT_EASTING
-	double  VENT_NORTHING
+	double ELEVATION_UNCERT (optional)
+	double MODAL_THICKNESS
+	
+	string ASCII_THICKNESS  (optional, at least 1)
+	string RASTER_HITMAP    (optional, at least 1)
+	string RASTER_THICKNESS (optional, at least 1)
+	string RASTER_ELEVATION (optional, at least 1)
+	string RASTER_NEW_ELEV  (optional, at least 1)
+	
+	double PULSE_VOLUME
+	double TOTAL_VOLUME
+	double VENT_EASTING
+	double VENT_NORTHING
+	
+	Checks at end for configuration file errors, where mandatory parameters were
+	  not assigned.
 */
-	unsigned max_line_length = 256;
-	char     line[256];
-	char     var[64];
-	char     value[256];
+
+	unsigned maxLineLength = 256;
+	char     line[256];             /*Line string from file       */
+	char     var[64];               /*Parameter Name  in each line*/
+	char     value[256];            /*Parameter Value in each line*/
 	int      i;
 	char     *ptr;
-	VentArr  *INITVents=NULL;  /*working array for vents in this module*/
-	char     **INITFiles; /*working array for filenames in this module*/
-	unsigned INITFILEct = 7;  /*number of possible input files*/
-	FILE     *Opener;     /*Dummy File variable to test valid output file paths*/
-	unsigned outputs = 0; /*The model needs at least one output to write*/
+	VentArr  *INITVents=NULL;  /*working array for vents in this module         */
+	char     **INITFiles;      /*working array for filenames in this module     */
+	unsigned INITFilesCount = 7;   /*number of possible input files             */
+	FILE     *Opener;     /*Dummy File variable to test valid output file paths */
+	unsigned outputs = 0; /*Number of output types called for (must have >=1)   */
 	
 	FILE *ConfigFile;
 	
 	
 	/*Allocate filename pointers*/
-	if((*Filenames=(char**)malloc((unsigned)(INITFILEct+1)*sizeof(char*)))==NULL){
-		printf("Error: [INITIALIZE]\n");
+	if((*Filenames=(char**)malloc((unsigned)(INITFilesCount+1)*sizeof(char*)))==NULL){
+		printf("ERROR [INITIALIZE]:\n");
 		printf("   NO MORE MEMORY: Tried to allocate memory for 7 filenames\n");
 		return(-1);
 	}
 	INITFiles = *Filenames;
-	for(i=0;i<(INITFILEct+1);i++){
-		if((INITFiles[i]=(char*)malloc(sizeof(char)*(max_line_length+1)))==NULL) {
+	for(i=0;i<(INITFilesCount+1);i++){
+		if((INITFiles[i]=(char*)malloc(sizeof(char)*(maxLineLength+1)))==NULL) {
 			printf("\n[INITIALIZE] Out of Memory assigning filenames!\n");
 			return(-1);
 		}
@@ -47,14 +58,14 @@ int INITIALIZE(char *CFGfilename, char ***Filenames, double *param_modalthicknes
 	/*open configuration file*/
 	ConfigFile = fopen(CFGfilename, "r");
 	if (ConfigFile == NULL) {
-		printf("\nError:[INITIALIZE] Cannot open configuration file=[%s]:[%s]!\n",
+		printf("\nERROR [INITIALIZE]: Cannot open configuration file=[%s]:[%s]!\n",
 		       CFGfilename,
 		       strerror(errno));
 		return(-1);
 	}
 
 	/* use each line to compare to needed values*/
-	while (fgets(line, max_line_length, ConfigFile) != NULL) {
+	while (fgets(line, maxLineLength, ConfigFile) != NULL) {
 		/*if first character is comment, new line, space, return to next line*/
 		if (line[0] == '#' || line[0] == '\n' || line[0] == ' ') continue;
 		
@@ -100,7 +111,7 @@ int INITIALIZE(char *CFGfilename, char ***Filenames, double *param_modalthicknes
 			
 			Opener = fopen(INITFiles[3], "w");
 			if (Opener == NULL) {
-				printf("\nError:[INITIALIZE] Failed to create an output file at [%s]:[%s]!\n",
+				printf("\nERROR [INITIALIZE]: Failed to create an output file at [%s]:[%s]!\n",
 				       INITFiles[3],
 				       strerror(errno));
 				return(-1);
@@ -118,7 +129,7 @@ int INITIALIZE(char *CFGfilename, char ***Filenames, double *param_modalthicknes
 			
 			Opener = fopen(INITFiles[4], "w");
 			if (Opener == NULL) {
-				printf("\nError:[INITIALIZE] Failed to create an output file at [%s]:[%s]!\n",
+				printf("\nERROR [INITIALIZE]: Failed to create an output file at [%s]:[%s]!\n",
 				       INITFiles[4],
 				       strerror(errno));
 				return(-1);
@@ -136,7 +147,7 @@ int INITIALIZE(char *CFGfilename, char ***Filenames, double *param_modalthicknes
 			
 			Opener = fopen(INITFiles[5], "w");
 			if (Opener == NULL) {
-				printf("\nError:[INITIALIZE] Failed to create an output file at [%s]:[%s]!\n",
+				printf("\nERROR [INITIALIZE]: Failed to create an output file at [%s]:[%s]!\n",
 				       INITFiles[5],
 				       strerror(errno));
 				return(-1);
@@ -154,7 +165,7 @@ int INITIALIZE(char *CFGfilename, char ***Filenames, double *param_modalthicknes
 			
 			Opener = fopen(INITFiles[6], "w");
 			if (Opener == NULL) {
-				printf("\nError:[INITIALIZE] Failed to create an output file at [%s]:[%s]!\n",
+				printf("\nERROR [INITIALIZE]: Failed to create an output file at [%s]:[%s]!\n",
 				       INITFiles[6],
 				       strerror(errno));
 				return(-1);
@@ -172,7 +183,7 @@ int INITIALIZE(char *CFGfilename, char ***Filenames, double *param_modalthicknes
 			
 			Opener = fopen(INITFiles[7], "w");
 			if (Opener == NULL) {
-				printf("\nError:[INITIALIZE] Failed to create an output file at [%s]:[%s]!\n",
+				printf("\nERROR [INITIALIZE]: Failed to create an output file at [%s]:[%s]!\n",
 				       INITFiles[7],
 				       strerror(errno));
 				return(-1);
@@ -229,7 +240,7 @@ int INITIALIZE(char *CFGfilename, char ***Filenames, double *param_modalthicknes
 				}
 				else { /*If last vent has not yet been filled*/
 					/*Call Error, report correct syntax, return -1*/
-					printf("\nError: [INITIALIZE] Previous vent missing data.");
+					printf("\nERROR [INITIALIZE]: Previous vent missing data.");
 					printf(" Configuration File Error.\n Syntax:\n");
 					printf("  NEW VENT\n  VENT_NORTHING = ___\n  VENT_EASTING = ___\n");
 					printf("  VENT_PULSE_VOLUME = ___\n  VENT_TOTAL_VOLUME = ___\n");
@@ -243,12 +254,12 @@ int INITIALIZE(char *CFGfilename, char ***Filenames, double *param_modalthicknes
 			if((*ventct > 0) && (INITVents[*ventct-1].pulsevolume == DBL_MAX)) {
 				INITVents[*ventct-1].pulsevolume = strtod(value,&ptr);
 				if (ptr == value) { /*NOT A NUMBER*/
-					printf("\nError: [INITIALIZE] Vent Pulse Volume is not a number!\n");
+					printf("\nERROR [INITIALIZE]: Vent Pulse Volume is not a number!\n");
 					return(-1);
 				}
 				printf("[assigned]\n");
 			} else { /*if vent pulse volume declared before the next NEW VENT declared*/
-				printf("\nError: [INITIALIZE] Vent Pulse Volume declared before New Vent declared");
+				printf("\nERROR [INITIALIZE]: Vent Pulse Volume declared before New Vent declared");
 				printf(" in Configuration File.\n Correct Syntax:\n");
 				printf("  NEW VENT\n  VENT_NORTHING = ___\n  VENT_EASTING = ___\n");
 				printf("  VENT_PULSE_VOLUME = ___\n  VENT_TOTAL_VOLUME = ___\n");
@@ -261,12 +272,12 @@ int INITIALIZE(char *CFGfilename, char ***Filenames, double *param_modalthicknes
 			if((*ventct > 0) && (INITVents[*ventct-1].totalvolume == DBL_MAX)) {
 				INITVents[*ventct-1].totalvolume = strtod(value,&ptr);
 				if (ptr == value) { /*NOT A NUMBER*/
-					printf("\nError: [INITIALIZE] Vent Total Volume is not a number!\n");
+					printf("\nERROR [INITIALIZE]: Vent Total Volume is not a number!\n");
 					return(-1);
 				}
 				printf("[assigned]\n");
 			} else { /*if vent total volume declared before the next NEW VENT declared*/
-				printf("\nError: [INITIALIZE] Vent Total Volume declared before New Vent declared");
+				printf("\nERROR [INITIALIZE]: Vent Total Volume declared before New Vent declared");
 				printf(" in Configuration File.\n Correct Syntax:\n");
 				printf("  NEW VENT\n  VENT_NORTHING = ___\n  VENT_EASTING = ___\n");
 				printf("  VENT_PULSE_VOLUME = ___\n  VENT_TOTAL_VOLUME = ___\n");
@@ -279,12 +290,12 @@ int INITIALIZE(char *CFGfilename, char ***Filenames, double *param_modalthicknes
 			if((*ventct > 0) && (INITVents[*ventct-1].easting == DBL_MAX)) {
 				INITVents[*ventct-1].easting = strtod(value,&ptr);
 				if (ptr == value) { /*NOT A NUMBER*/
-					printf("\nError: [INITIALIZE] Vent Easting is not a number!\n");
+					printf("\nERROR [INITIALIZE]: Vent Easting is not a number!\n");
 					return(-1);
 				}
 				printf("[assigned]\n");
 			} else { /*if vent easting declared before the next NEW VENT declared*/
-				printf("\nError: [INITIALIZE] Vent Easting declared before New Vent declared");
+				printf("\nERROR [INITIALIZE]: Vent Easting declared before New Vent declared");
 				printf(" in Configuration File.\n Correct Syntax:\n");
 				printf("  NEW VENT\n  VENT_NORTHING = ___\n  VENT_EASTING = ___\n");
 				printf("  VENT_PULSE_VOLUME = ___\n  VENT_TOTAL_VOLUME = ___\n");
@@ -297,12 +308,12 @@ int INITIALIZE(char *CFGfilename, char ***Filenames, double *param_modalthicknes
 			if((*ventct > 0) && (INITVents[*ventct-1].northing == DBL_MAX)) {
 				INITVents[*ventct-1].northing = strtod(value,&ptr);
 				if (ptr == value) { /*NOT A NUMBER*/
-					printf("\nError: [INITIALIZE] Vent Northing is not a number!\n");
+					printf("\nERROR [INITIALIZE]: Vent Northing is not a number!\n");
 					return(-1);
 				}
 				printf("[assigned]\n");
 			} else { /*if vent northing declared before the next NEW VENT declared*/
-				printf("\nError: [INITIALIZE] Vent Northing declared before New Vent declared");
+				printf("\nERROR [INITIALIZE]: Vent Northing declared before New Vent declared");
 				printf(" in Configuration File.\n Correct Syntax:\n");
 				printf("  NEW VENT\n  VENT_NORTHING = ___\n  VENT_EASTING = ___\n");
 				printf("  VENT_PULSE_VOLUME = ___\n  VENT_TOTAL_VOLUME = ___\n");
@@ -318,7 +329,7 @@ int INITIALIZE(char *CFGfilename, char ***Filenames, double *param_modalthicknes
 	
 	/*at end check for assigned last vent.*/
 	if(*ventct == 0) { /*If no vents were found in configuration file*/
-		printf("\nError: [INITIALIZE] No Vents Assigned in Configuration File!\n");
+		printf("\nERROR [INITIALIZE]: No Vents Assigned in Configuration File!\n");
 		return(-1);
 	}
 	else if(((INITVents[*ventct-1].northing    == DBL_MAX)  ||
@@ -326,7 +337,7 @@ int INITIALIZE(char *CFGfilename, char ***Filenames, double *param_modalthicknes
 	        ((INITVents[*ventct-1].totalvolume == DBL_MAX)  ||
 	         (INITVents[*ventct-1].pulsevolume == DBL_MAX))) {
 	/*If vent is missing information*/
-		printf("\nError: [INITIALIZE] Last Vent missing information:\n");
+		printf("\nERROR [INITIALIZE]: Last Vent missing information:\n");
 		printf(" Vent #%u\n",*ventct);
 		if(INITVents[*ventct-1].northing != DBL_MAX)
 		printf("  Northing     = %f\n",INITVents[*ventct-1].northing);
@@ -350,15 +361,15 @@ int INITIALIZE(char *CFGfilename, char ***Filenames, double *param_modalthicknes
 		printf("ELEVATION UNCERTAINTY = 0: DEM values assumed to be true.\n");
 	}
 	if(!*param_modalthickness) { /*Modal thickness is missing.*/
-		printf("\nError: [INITIALIZE] No Residual Thickness Given!!\n");
+		printf("\nERROR [INITIALIZE]: No Residual Thickness Given!!\n");
 		return(-1);
 	}
 	if(!strcmp(INITFiles[0],"")) { /*DEM Filename is missing.*/
-		printf("\nError: [INITIALIZE] No DEM Filename Given!!\n");
+		printf("\nERROR [INITIALIZE]: No DEM Filename Given!!\n");
 		return(-1);
 	}
 	if(!outputs) { /*No Output Filenames are given.*/
-		printf("\nError: [INITIALIZE] No Output Filenames Given!!\n");
+		printf("\nERROR [INITIALIZE]: No Output Filenames Given!!\n");
 		return(-1);
 	}
 	

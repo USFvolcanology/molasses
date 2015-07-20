@@ -42,7 +42,23 @@ typedef struct VentArr {
 } VentArr;
 
 /*Global Variables*/
-time_t starttime;
-time_t endtime;
+time_t startTime;
+time_t endTime;
+
+/*      ,``                 .`,   
+      `,.+,               ``+`    
+   ,.`#++``               ,;++`,  
+ , +++'`.                  ,++++ `
+` +++++++;.``  ,   ,     `#+++++ `
+``+++++++++++`,   ,'++++++++++'`` 
+  .,`  `++++ .   .++++++;.  ,,    
+     ,+++++.   ` +++++ ,          
+     ,`+++;, ``'++++`,            
+    ,;+++`, . +++++,              
+  . ++++;;:::++++',               
+   ,'++++++++++#`,                
+    ,.....````,`                  
+                                  
+        GO BULLS                */
 
 #endif /*#ifndef _LAVA_STRUCTS_*/

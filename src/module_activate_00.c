@@ -1,38 +1,41 @@
 #include "prototypes.h"
 
-unsigned ACTIVATE(Location **grid, Cell *list, unsigned row, unsigned col, 
+unsigned ACTIVATE(Location **dataGrid, Cell *CAList, unsigned row, unsigned col, 
                   unsigned aCt, char parent, char vent) {
+/*ACTIVATE_00 is a PARENT-CHILD RELATIONSHIP Activation Sceme! Parents-Child
+  Relationships are recorded.*/
+
 /*Module: ACTIVATE
-	accepts a location marker (row,column)
-	checks active value in a grid of typedef Location (global grid)
-	assigns data to list of typdef Cell (active list) from grid
+	Accepts a location marker (row,column)
+	Checks active value in a global data grid to make sure cell is not already
+	  active
+	Assigns data from global data grid to Cellular Automata List
 	
 	if active value == 0 (inactive), changes:
 		active count (aCt) is incremented
-		grid[row][column] active value <- aCt
-		list[aCt] data values <- grid[row][column]
-		list[aCt] vent value <- vent argument
-		list[aCt] thickness value <- -1*residual argument
+		dataGrid[row][column] active value <- aCt
+		CAList[aCt] data values <- dataGrid[row][column]
+		CAList[aCt] vent value <- vent argument (1=vent, 0=not vent)
+		CAList[aCt] thickness value <- -1*residual argument
 		
 	return the active count. 
 	Active count should never be 0, so this can be used for error handling.
 */
 
 	/*If inactive:*/
-	if(!grid[row][col].active) {
-		/*Here is where you can check for AOI*/
+	if(!dataGrid[row][col].active) {
 		
 		aCt++;
-		grid[row][col].active = (unsigned) aCt;
+		dataGrid[row][col].active = (unsigned) aCt;
 		
-		list[aCt].row = (unsigned) row;
-		list[aCt].col = (unsigned) col;
-		list[aCt].elev = grid[row][col].elev;
-		list[aCt].vent = (char) vent;
-		list[aCt].lava_in = 0.0;
-		list[aCt].lava_out = 0.0;
-		list[aCt].thickness = (double) -1*grid[row][col].residual;
-		list[aCt].parents = (char) parent;
+		CAList[aCt].row       = (unsigned) row;
+		CAList[aCt].col       = (unsigned) col;
+		CAList[aCt].elev      = dataGrid[row][col].elev;
+		CAList[aCt].vent      = (char) vent;
+		CAList[aCt].lava_in   = 0.0;
+		CAList[aCt].lava_out  = 0.0;
+		CAList[aCt].thickness = (double) -1*dataGrid[row][col].residual;
+		CAList[aCt].parents   = (char) parent;
 		
 		return(aCt); /*Return active count if just activated*/
 	}

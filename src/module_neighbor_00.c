@@ -1,7 +1,7 @@
 #include "prototypes.h"
 
-Cell *NEIGHBOR_ID(Cell current_cell, Location **grid, double *gridmetadata,
-                  Cell *list, int *neighbor_count) {
+Cell *NEIGHBOR_ID(Cell cCell, Location **grid, double *gridMetadata,
+                  Cell *CAList, int *neighborCount) {
 /*Module: NEIGHBOR_ID (4 Directions)
 	identifies 4-neighbors, List of Cells (4 long) updated, # of eligible-for-lava
 	neighbors returned
@@ -18,47 +18,47 @@ Cell *NEIGHBOR_ID(Cell current_cell, Location **grid, double *gridmetadata,
 	*Flags eligible neighbors in neighbor list
 	*Updates neighbor count
 	
-	*Neighbor list is passed back as a pointer with rows, cols, elevs of 
+	*Neighbor list is returned as an Automaton List with rows, cols, elevs of 
 	 eligible neighbors
-	*Returns neighbor count
+	*Passes back Neighbor Count as pointer
 */
 	
-	char parents;                           /*Parent bookkeper*/
-	int up,down,left,right,cur_row,cur_col; /*Geographic bookkeepers*/
-	Cell *neighbor_list;
+	char parents;                      /*Parent bitcode*/
+	int uRow,dRow,lCol,rCol,cRow,cCol; /*Row, Col addresses (center,up,down,L,R)*/
+	Cell *neighborList;
 	
 	/*Create the neighbor list array*/
-	if((neighbor_list = (Cell*)malloc(8 * sizeof(Cell)))==NULL) {
+	if((neighborList = (Cell*)malloc(8 * sizeof(Cell)))==NULL) {
 		printf("\n[NEIGHBOR_ID]   No more memory while creating Neighbor List!!");
 		printf("  Exiting.\n");
 		exit(0);
 	}
 	
 	/*Test to see if neighbor list is large enough for this module/is declared*/
-	/*if ((n = sizeof(neighbor_list)/sizeof(Cell)) < 8) {
+	/*if ((n = sizeof(neighborList)/sizeof(Cell)) < 8) {
 		printf("Error in [NEIGHBOR_ID]: Neighbor List array received is too small\n");
 		return(-9);
 	}*/
 	
-	/*Reset neighbor_list values to 0*/
+	/*Reset neighborList values to 0*/
 	/*for (i=0;i<n;i++) {
-		neighbor_list[i].row  = 0;
-		neighbor_list[i].col  = 0;
-		neighbor_list[i].elev = 0;
+		neighborList[i].row  = 0;
+		neighborList[i].col  = 0;
+		neighborList[i].elev = 0;
 	}*/
 	
-	*neighbor_count = 0; /*Reset neighbor counter*/
+	*neighborCount = 0; /*Reset neighbor counter*/
 	
 	/*define column and row numbers for current cell and neighbors*/
-	cur_row = current_cell.row;
-	cur_col = current_cell.col;
-	up = cur_row + 1;
-	down = cur_row - 1;
-	right = cur_col + 1;
-	left = cur_col - 1;
+	cRow = cCell.row;
+	cCol = cCell.col;
+	uRow = cRow + 1;
+	dRow = cRow - 1;
+	rCol = cCol + 1;
+	lCol = cCol - 1;
 
 	/*Off grid handling*/
-	/*gridmetadata format:
+	/*gridMetadata format:
 		[0] lower left x
 		[1] w-e pixel resolution
 		[2] number of cols, assigned manually      **********
@@ -66,26 +66,26 @@ Cell *NEIGHBOR_ID(Cell current_cell, Location **grid, double *gridmetadata,
 		[4] number of lines, assigned manually     **********
 		[5] n-s pixel resolution (negative value)
 	*/
-	if (down < 0) {
+	if (dRow < 0) {
 		printf("\nFLOW IS OFF THE MAP! (South) [NEIGHBOR_ID]\n");
-		*neighbor_count = -1;
-		return(neighbor_list);
-	} else if (up >= gridmetadata[4]) {
+		*neighborCount = -1;
+		return(neighborList);
+	} else if (uRow >= gridMetadata[4]) {
 		printf("\nFLOW IS OFF THE MAP! (North) [NEIGHBOR_ID]\n");
-		*neighbor_count = -2;
-		return(neighbor_list);
-	} else if (left < 0) {
+		*neighborCount = -2;
+		return(neighborList);
+	} else if (lCol < 0) {
 		printf("\nFLOW IS OFF THE MAP! (West) [NEIGHBOR_ID]\n");
-		*neighbor_count = -3;
-		return(neighbor_list);
-	} else if (right >= gridmetadata[2]) {
+		*neighborCount = -3;
+		return(neighborList);
+	} else if (rCol >= gridMetadata[2]) {
 		printf("\nFLOW IS OFF THE MAP! (East) [NEIGHBOR_ID]\n");
-		*neighbor_count = -4;
-		return(neighbor_list);
+		*neighborCount = -4;
+		return(neighborList);
 	}
 
 	/*Parent finding requires bit switching*/
-	parents = current_cell.parents;
+	parents = cCell.parents;
 	
 	/****
 	**FOR EACH DIRECTION, TEST FOR PARENTAGE, ACTIVE STATUS, ELEVATION
@@ -95,23 +95,23 @@ Cell *NEIGHBOR_ID(Cell current_cell, Location **grid, double *gridmetadata,
 	/*NORTH*/
 	if(!(parents & (1 << 3))) { 
 	/*if 3rd parent bit False, UPWARD cell is not parent: Continue*/
-		if(!(grid[up][cur_col].active)) {
+		if(!(grid[uRow][cCol].active)) {
 		/*if UPWARD cell is inactive in Global Grid, use grid elevation value*/
-			if(current_cell.elev > grid[up][cur_col].elev) {
+			if(cCell.elev > grid[uRow][cCol].elev) {
 			/*if active cell's elevation is higher than UPWARD cell, flag up cell*/
-				neighbor_list[*neighbor_count].row  = up;
-				neighbor_list[*neighbor_count].col  = cur_col;
-				neighbor_list[*neighbor_count].elev = grid[up][cur_col].elev;
-				*neighbor_count+=1;
+				neighborList[*neighborCount].row  = uRow;
+				neighborList[*neighborCount].col  = cCol;
+				neighborList[*neighborCount].elev = grid[uRow][cCol].elev;
+				*neighborCount+=1;
 			}
 		} else {
 		/*if UPWARD cell is active in Global Grid, use active list elev value*/
-			if(current_cell.elev > list[grid[up][cur_col].active].elev) {
+			if(cCell.elev > CAList[grid[uRow][cCol].active].elev) {
 			/*if active cell's elevation is higher than UPWARD cell, flag up cell*/
-				neighbor_list[*neighbor_count].row  = up;
-				neighbor_list[*neighbor_count].col  = cur_col;
-				neighbor_list[*neighbor_count].elev = list[grid[up][cur_col].active].elev;
-				*neighbor_count+=1;
+				neighborList[*neighborCount].row  = uRow;
+				neighborList[*neighborCount].col  = cCol;
+				neighborList[*neighborCount].elev = CAList[grid[uRow][cCol].active].elev;
+				*neighborCount+=1;
 			}
 		}
 	}
@@ -119,23 +119,23 @@ Cell *NEIGHBOR_ID(Cell current_cell, Location **grid, double *gridmetadata,
 	/*SOUTH*/
 	if(!(parents & (1 << 1))) {
 	/*if 1st parent bit False, DOWNWARD cell is not parent: Continue*/
-		if(!(grid[down][cur_col].active)) {
+		if(!(grid[dRow][cCol].active)) {
 		/*if DOWNWARD cell is inactive in Global Grid, use grid elevation value*/
-			if(current_cell.elev > grid[down][cur_col].elev) {
+			if(cCell.elev > grid[dRow][cCol].elev) {
 			/*if active cell's elevation is higher than DOWNWARD cell, flag down cell*/
-				neighbor_list[*neighbor_count].row  = down;
-				neighbor_list[*neighbor_count].col  = cur_col;
-				neighbor_list[*neighbor_count].elev = grid[down][cur_col].elev;
-				*neighbor_count+=1;
+				neighborList[*neighborCount].row  = dRow;
+				neighborList[*neighborCount].col  = cCol;
+				neighborList[*neighborCount].elev = grid[dRow][cCol].elev;
+				*neighborCount+=1;
 			}
 		} else {
 		/*if DOWNWARD cell is active in Global Grid, use active list elev value*/
-			if(current_cell.elev > list[grid[down][cur_col].active].elev) {
+			if(cCell.elev > CAList[grid[dRow][cCol].active].elev) {
 			/*if active cell's elevation is higher than DOWNWARD cell, flag down cell*/
-				neighbor_list[*neighbor_count].row  = down;
-				neighbor_list[*neighbor_count].col  = cur_col;
-				neighbor_list[*neighbor_count].elev = list[grid[down][cur_col].active].elev;
-				*neighbor_count+=1;
+				neighborList[*neighborCount].row  = dRow;
+				neighborList[*neighborCount].col  = cCol;
+				neighborList[*neighborCount].elev = CAList[grid[dRow][cCol].active].elev;
+				*neighborCount+=1;
 			}
 		}
 	}
@@ -143,23 +143,23 @@ Cell *NEIGHBOR_ID(Cell current_cell, Location **grid, double *gridmetadata,
 		/*WEST*/
 	if(!(parents & (1 << 2))) { 
 	/*if 2nd parent bit False, LEFTWARD cell is not parent: Continue*/
-		if(!(grid[cur_row][left].active)) {
+		if(!(grid[cRow][lCol].active)) {
 		/*if LEFTWARD cell is inactive in Global Grid, use grid elevation value*/
-			if(current_cell.elev > grid[cur_row][left].elev) {
+			if(cCell.elev > grid[cRow][lCol].elev) {
 			/*if active cell's elevation is higher than LEFTWARD cell, flag left cell*/
-				neighbor_list[*neighbor_count].row  = cur_row;
-				neighbor_list[*neighbor_count].col  = left;
-				neighbor_list[*neighbor_count].elev = grid[cur_row][left].elev;
-				*neighbor_count+=1;
+				neighborList[*neighborCount].row  = cRow;
+				neighborList[*neighborCount].col  = lCol;
+				neighborList[*neighborCount].elev = grid[cRow][lCol].elev;
+				*neighborCount+=1;
 			}
 		} else {
 		/*if LEFTWARD cell is active in Global Grid, use active list elev value*/
-			if(current_cell.elev > list[grid[cur_row][left].active].elev) {
+			if(cCell.elev > CAList[grid[cRow][lCol].active].elev) {
 			/*if active cell's elevation is higher than LEFTWARD cell, flag left cell*/
-				neighbor_list[*neighbor_count].row  = cur_row;
-				neighbor_list[*neighbor_count].col  = left;
-				neighbor_list[*neighbor_count].elev = list[grid[cur_row][left].active].elev;
-				*neighbor_count+=1;
+				neighborList[*neighborCount].row  = cRow;
+				neighborList[*neighborCount].col  = lCol;
+				neighborList[*neighborCount].elev = CAList[grid[cRow][lCol].active].elev;
+				*neighborCount+=1;
 			}
 		}
 	}
@@ -167,23 +167,23 @@ Cell *NEIGHBOR_ID(Cell current_cell, Location **grid, double *gridmetadata,
 	/*EAST*/
 	if(!(parents & (1 << 0))) { 
 	/*if 0th parent bit False, RIGHTWARD cell is not parent: Continue*/
-		if(!(grid[cur_row][right].active)) {
+		if(!(grid[cRow][rCol].active)) {
 		/*if RIGHTWARD cell is inactive in Global Grid, use grid elevation value*/
-			if(current_cell.elev > grid[cur_row][right].elev) {
+			if(cCell.elev > grid[cRow][rCol].elev) {
 			/*if active cell's elevation is higher than RIGHTWARD cell, flag right cell*/
-				neighbor_list[*neighbor_count].row  = cur_row;
-				neighbor_list[*neighbor_count].col  = right;
-				neighbor_list[*neighbor_count].elev = grid[cur_row][right].elev;
-				*neighbor_count+=1;
+				neighborList[*neighborCount].row  = cRow;
+				neighborList[*neighborCount].col  = rCol;
+				neighborList[*neighborCount].elev = grid[cRow][rCol].elev;
+				*neighborCount+=1;
 			}
 		} else {
 		/*if RIGHTWARD cell is active in Global Grid, use active list elev value*/
-			if(current_cell.elev > list[grid[cur_row][right].active].elev) {
+			if(cCell.elev > CAList[grid[cRow][rCol].active].elev) {
 			/*if active cell's elevation is higher than RIGHTWARD cell, flag right cell*/
-				neighbor_list[*neighbor_count].row  = cur_row;
-				neighbor_list[*neighbor_count].col  = right;
-				neighbor_list[*neighbor_count].elev = list[grid[cur_row][right].active].elev;
-				*neighbor_count+=1;
+				neighborList[*neighborCount].row  = cRow;
+				neighborList[*neighborCount].col  = rCol;
+				neighborList[*neighborCount].elev = CAList[grid[cRow][rCol].active].elev;
+				*neighborCount+=1;
 			}
 		}
 	}
@@ -191,5 +191,5 @@ Cell *NEIGHBOR_ID(Cell current_cell, Location **grid, double *gridmetadata,
 	
 	/*neighbor counter is updated as a pointer and is passed back to [DISTRIBUTE]*/
 	/*return list of neighbors*/
-	return neighbor_list;
+	return neighborList;
 }
