@@ -36,6 +36,15 @@ int DISTRIBUTE(DataCell **dataGrid, Automata *CAList, unsigned *activeCount,
               reset transition properties
           
           Return total number of active cells and updated CAList with pointers
+          
+          The volume to distribute from the center cell is calculated as 
+          the minimum of:
+          1) The amount of lava above the residual thickness within the cell
+          2) a*b/(a+b)
+               where a = The summed Center Cell-Neighbor Cell Relief
+                     b = the minimum Center Cell-Neighbor Cell Relief
+          This guarantees that the center cell will not give lava to the point
+          that it is below its neighbors.
 */
 	
 	/*VARIABLES******************************************************************/

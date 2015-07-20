@@ -32,15 +32,15 @@ Pulse
 
 Distribute
   00
-    Slope-based sharing: Will share lava to neighboring cells proportional to the slope or relief in a given direction
+    IMMEDIATELY UPDATES Cellular Automata and determines how much lava to share between neighbors PROPORTIONAL TO SLOPE. The Center Cell will SHARE ALL VOLUME of lava it contains ABOVE the RESIDUAL VOLUME.
   01
-    Equal sharing: Will share lava evenly to all neighboring cells which are below the current location
+    IMMEDIATELY UPDATES Cellular Automata and shares lava EVENLY to all lower neighbors NOT-PROPORTIONAL TO SLOPE. The Center Cell will SHARE ALL VOLUME of lava it contains ABOVE the RESIDUAL VOLUME.
   02
-    Fair-share: not functional yet
+    Updates Cellular Automata ALL AT ONCE and determines how much lava to share between neighbors PROPORTIONAL TO SLOPE. The Center Cell will SHARE ALL VOLUME of lava it contains ABOVE the RESIDUAL VOLUME.
   03
-    Slope-based sharing with updating parent-child relationships: If a cell gives lava to another, it cannot later receive lava from that neighbor during each call to the distribute function. Each time the function is called, the P-C relationships are reset.
+    Updates Cellular Automata ALL AT ONCE and shares lava EVENLY to all lower neighbors NOT-PROPORTIONAL TO SLOPE. The Center Cell will SHARE ALL VOLUME of lava it contains ABOVE the RESIDUAL VOLUME.
   04
-    Equal sharing with updating parent-child relationships
+    Updates Cellular Automata ALL AT ONCE and determines how much lava to share between neighbors PROPORTIONAL TO SLOPE. The Center Cell will SHARE MAXIMUM VOLUME of lava that keeps it AT OR ABOVE Neighboring cells.
 
 Neighbor_ID
   00
