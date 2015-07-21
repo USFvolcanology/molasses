@@ -120,6 +120,14 @@ int DISTRIBUTE(DataCell **dataGrid, Automata *CAList, unsigned *activeCount,
 					totalRelief += neighborDist[n] * neighborRelief[n];
 				}
 				
+				/*CHECK DISTRIBUTE VOLUME******/
+				/*Reduce volume to spread to safety volume if it is too large.*/
+				if (volumeDistribute > 
+				    (minNeighborRelief*totalRelief/(minNeighborRelief+totalRelief))
+				   )
+				    volumeDistribute =
+				    minNeighborRelief*totalRelief/(minNeighborRelief+totalRelief);
+				
 				/*LOOP THROUGH NEIGHBORS AGAIN to activate new cells, distribute lava*/
 				for(n=0;n<neighborCount;n++) {
 					
