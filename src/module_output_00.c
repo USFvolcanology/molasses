@@ -87,9 +87,9 @@ int OUTPUT(DataCell **dataGrid, Automata *flowList, unsigned flowcount,
 			
 			/*Assign Model Data to Data Block*/
 			k=0; /*Data Counter*/
-			for(i=0;i<geotransform[4];i++) { /*For each row, TOP DOWN*/
+			for(i=geotransform[4];i>0;i--) { /*For each row, TOP DOWN*/
 				for(j=0;j<geotransform[2];j++) {         /*For each col, Left->Right*/
-					if(dataGrid[i][j].active) RasterDataB[k++] = 1;
+					if(dataGrid[i-1][j].active) RasterDataB[k++] = 1;
 					else RasterDataB[k++] = 0;
 				}
 			}
@@ -129,10 +129,10 @@ int OUTPUT(DataCell **dataGrid, Automata *flowList, unsigned flowcount,
 			/*Thickness Raster**********************************/
 			if(outputtype==2) {
 				k=0; /*Data Counter*/
-				for(i=0;i<geotransform[4];i++) { /*For each row, TOP DOWN*/
+				for(i=geotransform[4];i>0;i--) { /*For each row, TOP DOWN*/
 					for(j=0;j<geotransform[2];j++) {         /*For each col, Left->Right*/
-						if(dataGrid[i][j].active) {
-							RasterDataD[k++] = flowList[dataGrid[i][j].active].thickness + 
+						if(dataGrid[i-1][j].active) {
+							RasterDataD[k++] = flowList[dataGrid[i-1][j].active].thickness + 
 							                   dataGrid[i][j].residual;
 						}
 						else RasterDataD[k++] = 0.0;
@@ -142,21 +142,21 @@ int OUTPUT(DataCell **dataGrid, Automata *flowList, unsigned flowcount,
 			/*Elevation Raster**********************************/
 			else if(outputtype==3) {
 				k=0; /*Data Counter*/
-				for(i=0;i<geotransform[4];i++) { /*For each row, TOP DOWN*/
+				for(i=geotransform[4];i>0;i--) { /*For each row, TOP DOWN*/
 					for(j=0;j<geotransform[2];j++) {         /*For each col, Left->Right*/
-						RasterDataD[k++] = dataGrid[i][j].elev;
+						RasterDataD[k++] = dataGrid[i-1][j].elev;
 					}
 				}
 			}
 			/*Elevation + Lava Thickness Raster*****************/
 			else if (outputtype==4) {
 				k=0; /*Data Counter*/
-				for(i=0;i<geotransform[4];i++) { /*For each row, TOP DOWN*/
+				for(i=geotransform[4];i>0;i--) { /*For each row, TOP DOWN*/
 					for(j=0;j<geotransform[2];j++) {         /*For each col, Left->Right*/
-						if(dataGrid[i][j].active) {
-							RasterDataD[k++] = flowList[dataGrid[i][j].active].elev;
+						if(dataGrid[i-1][j].active) {
+							RasterDataD[k++] = flowList[dataGrid[i-1][j].active].elev;
 						}
-						else RasterDataD[k++] = dataGrid[i][j].elev;
+						else RasterDataD[k++] = dataGrid[i-1][j].elev;
 					}
 				}
 			}
