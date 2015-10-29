@@ -30,6 +30,27 @@ To run the code after installation, use the command
 
 where \<config-file\> is a text configuration file. A sample configuration file (sample.cfg) is given in the main directory. An elevation model is required to run molasses, and at least one output file path and one vent location must be given in the configuration file. More information is documented in the docs directory.
 
+##### Sample Configuration File
+
+	DEM_FILE = raster_samples/flat_1300x1300.asc
+	ELEVATION_UNCERT = 0
+	
+	#Output
+	OUTFILE_A_THICKNESS = this-is/an-ascii-list-of-inundated-cells.tsv
+	#OUTFILE_R_HITMAP = this-is/a-binary-raster-map-of-inundation.tif
+	#OUTFILE_R_THICKNESS = this-is/a-raster-map-of-flow-thickness.tif
+	#OUTFILE_R_ELEVATION = this-is/a-raster-map-of-the-preflow-DEM.tif
+	#OUTFILE_R_NEW_ELEV = this-is/a-raster-map-of-the-post-flow-DEM.tif
+	
+	#Model Parameters
+	MODAL_THICKNESS = 1
+	
+	NEW_VENT
+	VENT_EASTING = 650
+	VENT_NORTHING = 650
+	VENT_PULSE_VOLUME = 1
+	VENT_TOTAL_VOLUME = 7000
+
 #### UNINSTALLATION
 
 To uninstall MOLASSES run
