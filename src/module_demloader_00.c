@@ -96,8 +96,11 @@ double *DEM_LOADER(char *DEMfilename, DataCell ***grid, char *modeltype) {
 	       (unsigned) DEMGeoTransform[4], (unsigned) DEMGeoTransform[2]);
 	
 	/*allocate memory for data grid*/
+	if(!strcmp(modeltype,"TOPOG")) {
 	*grid = GLOBALDATA_INIT((unsigned) DEMGeoTransform[4], 
 	                        (unsigned) DEMGeoTransform[2]);
+	}
+	
 	DEMgrid = *grid; /*Assign pointer position to DEMgrid variable*/
 	
 	/*Load elevation information into DEMBand. DEM should be only band in raster*/
@@ -151,7 +154,7 @@ double *DEM_LOADER(char *DEMfilename, DataCell ***grid, char *modeltype) {
 		
 		DEMgrid = *grid; /*Assign pointer position to DEMgrid variable*/
 		
-		for(i=0;i<DEMGeoTransform[4];i++) { /*For each row*/
+		for(i=0;i<(DEMGeoTransform[4]);i++) { /*For each row*/
 			/*calculate row so bottom row is read into data array first*/
 			YOff = (DEMGeoTransform[4]-1) - i;
 	

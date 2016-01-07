@@ -63,7 +63,7 @@ Jacob Richardson (jarichardson@mail.usf.edu)
 Laura Connor     (lconnor@usf.edu)
 
 Chuck Connor     (cbconnor@usf.edu)
-  
-#COPYRIGHT
+
+#### COPYRIGHT
 
 Copyright 2014, Creative Commons Attribution-NonCommercial 3.0 Unported (CC BY-NC 3.0). http://creativecommons.org/licenses/by-nc/3.0/

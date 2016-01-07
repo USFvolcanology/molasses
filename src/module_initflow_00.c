@@ -64,7 +64,7 @@ int INIT_FLOW (DataCell **dataGrid, Automata ***CAList, VentArr *ventList,
 		}
 	}
 	/*Error check that all flow thicknesses are positive!*/
-	if (minResidual<=0) {
+	if (minResidual<=1e-8) {
 		printf("\nERROR [INIT_FLOW]:");
 		printf(" Minimum Modal thickness (Residual Thickness) is <= 0!\n");
 		return(-1);
