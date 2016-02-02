@@ -40,17 +40,20 @@ int INITIALIZE(char *CFGfilename, char ***Filenames, double *param_modalthicknes
 	
 	
 	/*Allocate filename pointers*/
-	if((*Filenames=(char**)malloc((unsigned)(INITFilesCount+1)*sizeof(char*)))==NULL){
+	if((*Filenames=(char**)malloc((size_t)(INITFilesCount)*sizeof(char*)))==NULL){
 		printf("ERROR [INITIALIZE]:\n");
 		printf("   NO MORE MEMORY: Tried to allocate memory for 7 filenames\n");
 		return(-1);
 	}
 	INITFiles = *Filenames;
-	for(i=0;i<(INITFilesCount+1);i++){
-		if((INITFiles[i]=(char*)malloc(sizeof(char)*(maxLineLength+1)))==NULL) {
+	for(i=0;i<(INITFilesCount);i++){
+		/*Allocate memory for file names*/
+		if((INITFiles[i]=(char*)malloc(sizeof(char)*(maxLineLength)))==NULL) {
 			printf("\n[INITIALIZE] Out of Memory assigning filenames!\n");
 			return(-1);
 		}
+		/*Set initial character in each filename to EOS character*/
+		INITFiles[i][0] = '\0';
 	}
 	
 	printf("Reading in Parameters...\n");
@@ -78,7 +81,7 @@ int INITIALIZE(char *CFGfilename, char ***Filenames, double *param_modalthicknes
 		/*INPUT FILES AND GLOBAL MODEL PARAMETERS**********************************/
 		/*INPUT DEM FILE*/
 		if (!strncmp(var, "DEM_FILE", strlen("DEM_FILE"))) {
-			strcpy(INITFiles[0],value);
+			strncpy(INITFiles[0],value,strlen(value)+1);
 			printf("[assigned]\n");
 		}
 		
@@ -86,7 +89,7 @@ int INITIALIZE(char *CFGfilename, char ***Filenames, double *param_modalthicknes
 		else if (!strncmp(var, "MODAL_THICKNESS", strlen("MODAL_THICKNESS"))) {
 			*param_modalthickness = strtod(value,&ptr);
 			if (ptr == value) { /*NOT A NUMBER*/
-				strcpy(INITFiles[1],value);
+				strncpy(INITFiles[1],value,strlen(value)+1);
 				*param_modalthickness = -1; /*-1 is flag for file*/
 				printf("[as.-file]\n");
 			}
@@ -97,7 +100,7 @@ int INITIALIZE(char *CFGfilename, char ***Filenames, double *param_modalthicknes
 		else if (!strncmp(var, "ELEVATION_UNCERT", strlen("ELEVATION_UNCERT"))) {
 			*param_elevunc = strtod(value,&ptr);
 			if (ptr == value) { /*NOT A NUMBER*/
-				strcpy(INITFiles[2],value);
+				strncpy(INITFiles[2],value,strlen(value)+1);
 				*param_elevunc = -1; /*-1 is flag for file*/
 				printf("[as.-file]\n");
 			}
@@ -107,7 +110,7 @@ int INITIALIZE(char *CFGfilename, char ***Filenames, double *param_modalthicknes
 		/*OUTPUT FILES*************************************************************/
 		/*OUTPUT ASCII X,Y,THICKNESS FILE*/
 		else if (!strncmp(var, "OUTFILE_A_THICKNESS", strlen("OUTFILE_A_THICKNESS"))) {
-			strcpy(INITFiles[3],value);
+			strncpy(INITFiles[3],value,strlen(value)+1);
 			
 			Opener = fopen(INITFiles[3], "w");
 			if (Opener == NULL) {
@@ -125,7 +128,7 @@ int INITIALIZE(char *CFGfilename, char ***Filenames, double *param_modalthicknes
 		
 		/*OUTPUT HIT MAP FILE*/
 		else if (!strncmp(var, "OUTFILE_R_HITMAP", strlen("OUTFILE_R_HITMAP"))) {
-			strcpy(INITFiles[4],value);
+			strncpy(INITFiles[4],value,strlen(value)+1);
 			
 			Opener = fopen(INITFiles[4], "w");
 			if (Opener == NULL) {
@@ -143,7 +146,7 @@ int INITIALIZE(char *CFGfilename, char ***Filenames, double *param_modalthicknes
 		
 		/*OUTPUT RASTER THICKNESS FILE*/
 		else if (!strncmp(var, "OUTFILE_R_THICKNESS", strlen("OUTFILE_R_THICKNESS"))) {
-			strcpy(INITFiles[5],value);
+			strncpy(INITFiles[5],value,strlen(value)+1);
 			
 			Opener = fopen(INITFiles[5], "w");
 			if (Opener == NULL) {
@@ -161,7 +164,7 @@ int INITIALIZE(char *CFGfilename, char ***Filenames, double *param_modalthicknes
 		
 		/*OUTPUT RASTER THICKNESS FILE*/
 		else if (!strncmp(var, "OUTFILE_R_ELEVATION", strlen("OUTFILE_R_ELEVATION"))) {
-			strcpy(INITFiles[6],value);
+			strncpy(INITFiles[6],value,strlen(value)+1);
 			
 			Opener = fopen(INITFiles[6], "w");
 			if (Opener == NULL) {
@@ -179,7 +182,7 @@ int INITIALIZE(char *CFGfilename, char ***Filenames, double *param_modalthicknes
 		
 		/*OUTPUT RASTER THICKNESS FILE*/
 		else if (!strncmp(var, "OUTFILE_R_NEW_ELEV", strlen("OUTFILE_R_NEW_ELEV"))) {
-			strcpy(INITFiles[7],value);
+			strncpy(INITFiles[7],value,strlen(value)+1);
 			
 			Opener = fopen(INITFiles[7], "w");
 			if (Opener == NULL) {

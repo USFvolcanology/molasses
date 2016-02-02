@@ -359,9 +359,9 @@ DRIVER_00 is a VENT FLUX LIMITED flow scheme! The flow will end when all vents
 	
 	/*Check Filenames Array to see if a filename was given (so model output is
 	  requested).*/
-	for(i=0;i<=4;i++){
+	for(i=0;i<4;i++){
 		/*Check to see if the File Path is not empty (the following test will !=0)*/
-		if(strcmp(Filenames[i+3], "")) {
+		if(strlen(Filenames[i+3]) > 1) {
 		/*If there's a file path given, write model output to it.*/
 			ret = OUTPUT(dataGrid,         /*DataCell  Global Data Grid           */
 			             CAList[1],        /*Automaton Active Cells List          */

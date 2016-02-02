@@ -9,15 +9,18 @@ export DEM_loader        = 00
 export array_initializer = 00
 export flow_initializer  = 00
 export pulse             = 00
-export distribute        = 04
+export distribute        = 00
 export neighbor_ID       = 01
 export activate          = 01
 export output            = 00
 
-# Tool-related variables: Alter as needed for your system.
-export CC          ?= gcc
-export INSTALLPATH = /usr/local
-export GDALPATH    = /usr/include/gdal
+# Linking and compiling variables: Alter as needed for your system.
+export CC               ?= gcc
+export INSTALLPATH       = /usr/local
+export GDAL_INCLUDE_PATH = /usr/include/gdal
+# If needed, set lib path. Likely this can be left blank.
+# If this is set, toggle which LIBS line in commented in src/Makefile
+export GDAL_LIB_PATH     = 
 
 export bindir      = $(INSTALLPATH)/bin
 
