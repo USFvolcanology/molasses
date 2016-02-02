@@ -1,6 +1,7 @@
 CFLAGS = -Wall -pedantic -g -O2 -Wno-long-long
-INCLUDES = -I$(GDALPATH)
+INCLUDES = -I$(GDAL_INCLUDE_PATH)
 LIBS = -lgdal -lm
+# LIBS = -L$(GDAL_LIB_PATH) -lgdal -lm
 
 SRCS = driver_$(driver).c module_initialize_$(initialize).c \
 	module_demloader_$(DEM_loader).c module_arrayinit_$(array_initializer).c \
